@@ -1,6 +1,6 @@
 # Mijlasna 
 
-Hajz is a booking website for pools and majlis in Bahrain. We made it because most people book pools and majlis through whatsapp and its really messy, you dont know if the day is free or not and the owner have to keep track of everything by himself. So we wanted to make one place where customers can find a venue and book it and the owners can manage there bookings.
+Mijlasna is a booking website for pools and majlis in Bahrain. We made it because most people book pools and majlis through whatsapp and its really messy, you dont know if the day is free or not and the owner have to keep track of everything by himself. So we wanted to make one place where customers can find a venue and book it and the owners can manage there bookings.
 
 This is our project 3 for General Assembly and its made using the MERN stack.
 
