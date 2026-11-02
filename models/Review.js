@@ -14,11 +14,6 @@ const reviewSchema = new mongoose.Schema({
         min: 1,
         max: 200
     },
-    booking: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Booking',
-        required: true
-    },
     venue: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Venue',
