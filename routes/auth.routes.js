@@ -10,7 +10,7 @@ router.post("/sign-up", async (req, res) => {
     const { username, password, email, phone, role } = req.body;
 
     // Validation
-    if (!username || !password || !email || !phone) return res.status(400).json({message: "Username and password are required.",});
+    if (!username || !password || !email || !phone) return res.status(400).json({message: "All fields are required.",});
     if (password.length < 6) return res.status(400).json({message: "Password must be more than 6 characters",});
 
     const safeRole = role === "owner" ? "owner" : "customer"
@@ -28,7 +28,7 @@ router.post("/sign-up", async (req, res) => {
 
     res
       .status(201)
-      .json({ username: user.role, _id, createdAt, updatedAt });
+      .json({ username: user.username, role: user.role, _id, createdAt, updatedAt });
   } catch (err) {
     console.log(err);
     if (err.name === "ValidationError") {
@@ -39,7 +39,7 @@ router.post("/sign-up", async (req, res) => {
     if (err.code === 11000) {
       const field = Object.keys(err.keyValue)[0]
       return res.status(409).json({
-        message: "${field} already exists",
+        message: `${field} already exists`,
       });
     }
 
