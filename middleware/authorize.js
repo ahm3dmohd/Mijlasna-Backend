@@ -1,8 +1,8 @@
 
 function authorize(...roles) {
-    return (req, res) => {
+    return (req, res, next) => {
         if (!roles.includes(req.user.role)) {
-            return res.response(403).json({ err: "Not allowed!!"})
+            return res.status(403).json({ err: "Not allowed!!"})
         }
         next()
     }
