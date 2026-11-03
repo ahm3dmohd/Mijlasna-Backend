@@ -5,6 +5,7 @@ const authorize = require('../middleware/authorize')
 const validateObjectId = require('../middleware/validateObjectId')
 const Review = require('../models/Review')
 const Booking = require('../models/Booking')
+const BlockedDate = require('../models/Blocked-Date')
 
 // Sends the right status code for common Mongoose errors
 function handleError(res, err) {
@@ -120,9 +121,31 @@ router.post('/:id/booking', verifyToken, validateObjectId, async (req, res) => {
         }
         bookingDate.setUTCHours(0, 0, 0, 0)
 
+        const today = new Date()
+        today.setUTCHours(0, 0, 0, 0)
+        if (bookingDate < today) {
+            return res.status(400).json({ message: 'You cannot book a date in the past' })
+        }
+
         const getVenue = await Venue.findById(req.params.id)
         if (!getVenue) {
             return res.status(404).json({ message: 'Venue not found' })
+        }
+
+        // Is the date blocked by the owner?
+        const blocked = await BlockedDate.findOne({ venue: req.params.id, date: bookingDate })
+        if (blocked) {
+            return res.status(409).json({ message: 'This date is not available' })
+        }
+
+        // Is the date already booked? (rejected and cancelled bookings don't count)
+        const taken = await Booking.findOne({
+            venue: req.params.id,
+            date: bookingDate,
+            status: { $in: ['pending', 'confirmed'] }
+        })
+        if (taken) {
+            return res.status(409).json({ message: 'This date is already booked' })
         }
 
         // Sunday to Wednesday = weekday price, Thursday to Saturday = weekend price
@@ -144,6 +167,10 @@ router.post('/:id/booking', verifyToken, validateObjectId, async (req, res) => {
 
         res.status(201).json(newBooking)
     } catch (err) {
+        // Two people booked the same date at the same moment: the database index stops the second one
+        if (err.code === 11000) {
+            return res.status(409).json({ message: 'This date is already booked' })
+        }
         handleError(res, err)
     }
 })
