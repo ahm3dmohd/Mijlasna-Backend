@@ -17,6 +17,7 @@ router.get("/me", async (req, res) => {
             res.status(200).json(user)
     }catch(err) {
         console.log(err)
+        res.status(500).json({ message: "Internal Server Error" })
     }
 })
 
@@ -43,10 +44,11 @@ router.put("/me", async (req, res) => {
 router.delete("/me", async (req, res) => {
     try {
         const user = await User.findByIdAndDelete(req.user._id)
-        if (!user) return ({message : "User not found!"})
+        if (!user) return res.status(404).json({message : "User not found!"})
             res.status(200).json({message: "User deleted successfully.."})
     }catch(err) {
         console.log(err)
+        res.status(500).json({ message: "Internal Server Error" })
     }
 })
 
