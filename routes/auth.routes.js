@@ -13,13 +13,11 @@ router.post("/sign-up", async (req, res) => {
     if (!username || !password || !email || !phone) return res.status(400).json({message: "All fields are required.",});
     if (password.length < 6) return res.status(400).json({message: "Password must be more than 6 characters",});
 
-    const safeRole = role === "owner" ? "owner" : "customer"
-
     const user = await User.create({
-      username,
-      email,
-      phone,
-      role: safeRole,
+      username:username,
+      email:email,
+      phone:phone,
+      role:role,
       hashedPassword: await bcrypt.hash(password, 12),
 
     });

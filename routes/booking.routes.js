@@ -5,17 +5,16 @@ const validateObjectId = require("../middleware/validateObjectId")
 const Booking = require("../models/Booking")
 const Venue = require("../models/Venue")
 
-// Every booking route needs a logged-in user
 router.use(verifyToken)
 
-// Can this user see this booking? The customer, the venue's owner, or an admin
+
 function canView(booking, user) {
     if (user.role === "admin") return true
     if (booking.customer._id.equals(user._id)) return true
     return booking.venue && booking.venue.owner && booking.venue.owner.equals(user._id)
 }
 
-// GET /bookings - admin sees all, everyone else sees their own bookings
+
 router.get("/", async (req, res) => {
     try {
         let allBookings = null
@@ -35,8 +34,7 @@ router.get("/", async (req, res) => {
     }
 })
 
-// GET /bookings/owner - owner sees bookings for all of their venues
-// (must stay above /:id or Express treats "owner" as an id)
+
 router.get("/owner", authorize("owner"), async (req, res) => {
     try {
         const myVenues = await Venue.find({ owner: req.user._id }).select("_id")
@@ -51,16 +49,13 @@ router.get("/owner", authorize("owner"), async (req, res) => {
     }
 })
 
-// GET /bookings/:id - only the customer, the venue owner or an admin
+
 router.get("/:id", validateObjectId, async (req, res) => {
     try {
         const foundBooking = await Booking.findById(req.params.id)
             .populate("venue")
             .populate("customer")
 
-        if (!foundBooking) {
-            return res.status(404).json({ message: "Booking not found" })
-        }
         if (!canView(foundBooking, req.user)) {
             return res.status(403).json({ message: "You cannot view this booking" })
         }
@@ -71,14 +66,11 @@ router.get("/:id", validateObjectId, async (req, res) => {
     }
 })
 
-// POST /bookings/:id/checkout - the customer pays the deposit for their own booking
+
 router.post("/:id/checkout", validateObjectId, async (req, res) => {
     try {
         const foundBooking = await Booking.findById(req.params.id)
 
-        if (!foundBooking) {
-            return res.status(404).json({ message: "Booking not found" })
-        }
         if (!foundBooking.customer.equals(req.user._id)) {
             return res.status(403).json({ message: "You cannot pay for this booking" })
         }
@@ -95,17 +87,11 @@ router.post("/:id/checkout", validateObjectId, async (req, res) => {
     }
 })
 
-// PATCH /bookings/:id/status
-// Owner of the venue: confirmed, rejected or completed
-// Customer: cancelled only
+
 router.patch("/:id/status", validateObjectId, async (req, res) => {
     try {
         const { status } = req.body
         const foundBooking = await Booking.findById(req.params.id).populate("venue")
-
-        if (!foundBooking) {
-            return res.status(404).json({ message: "Booking not found" })
-        }
 
         const isOwner = foundBooking.venue && foundBooking.venue.owner && foundBooking.venue.owner.equals(req.user._id)
         const isCustomer = foundBooking.customer.equals(req.user._id)
@@ -132,16 +118,14 @@ router.patch("/:id/status", validateObjectId, async (req, res) => {
     }
 })
 
-// PUT /bookings/:id - the customer can only change their notes
+
 router.put("/:id", validateObjectId, async (req, res) => {
     try {
         const foundBooking = await Booking.findById(req.params.id)
 
-        if (!foundBooking) {
-            return res.status(404).json({ message: "Booking not found" })
-        }
-
-        if (foundBooking.customer.equals(req.user._id)) {
+        if (foundBooking.customer.equals(req.user._id)
+            || foundBooking.owner.equals(req.user._id)
+            || req.user.role === 'admin') {
             const updatedBooking = await Booking.findByIdAndUpdate(
                 req.params.id,
                 { notes: req.body.notes },
@@ -157,16 +141,14 @@ router.put("/:id", validateObjectId, async (req, res) => {
     }
 })
 
-// DELETE /bookings/:id - the customer deletes their own booking
+
 router.delete("/:id", validateObjectId, async (req, res) => {
     try {
         const foundBooking = await Booking.findById(req.params.id)
 
-        if (!foundBooking) {
-            return res.status(404).json({ message: "Booking not found" })
-        }
-
-        if (foundBooking.customer.equals(req.user._id)) {
+        if (foundBooking.customer.equals(req.user._id)
+            || foundBooking.owner.equals(req.user._id)
+            || req.user.role === 'admin') {
             const deletedBooking = await Booking.findByIdAndDelete(req.params.id)
             return res.status(200).json(deletedBooking)
         } else {

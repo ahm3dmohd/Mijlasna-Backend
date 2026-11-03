@@ -34,10 +34,8 @@ router.get('/', async (req, res) => {
 router.get('/:id', validateObjectId, async (req, res) => {
     try {
         const oneVenue = await Venue.findById(req.params.id)
-        if (!oneVenue) {
-            return res.status(404).json({ message: 'Venue not found' })
-        }
-        res.status(200).json(oneVenue)
+        const blockedDates = await Booking.find({venue: req.params.id})
+        res.status(200).json(oneVenue, blockedDates)
     } catch (err) {
         handleError(res, err)
     }
@@ -68,9 +66,6 @@ router.post('/', verifyToken, authorize('owner'), async (req, res) => {
 router.put('/:id', verifyToken, authorize('owner'), validateObjectId, async (req, res) => {
     try {
         const getVenueOwner = await Venue.findById(req.params.id)
-        if (!getVenueOwner) {
-            return res.status(404).json({ message: 'Venue not found' })
-        }
         if (!getVenueOwner.owner || !getVenueOwner.owner.equals(req.user._id)) {
             return res.status(403).json({ message: 'You do not have permission to edit this venue.' })
         }
@@ -93,9 +88,7 @@ router.put('/:id', verifyToken, authorize('owner'), validateObjectId, async (req
 router.delete('/:id', verifyToken, authorize('owner'), validateObjectId, async (req, res) => {
     try {
         const getVenueOwner = await Venue.findById(req.params.id)
-        if (!getVenueOwner) {
-            return res.status(404).json({ message: 'Venue not found' })
-        }
+
         if (!getVenueOwner.owner || !getVenueOwner.owner.equals(req.user._id)) {
             return res.status(403).json({ message: 'You do not have permission to delete this venue.' })
         }
@@ -110,9 +103,7 @@ router.delete('/:id', verifyToken, authorize('owner'), validateObjectId, async (
 router.post('/:id/booking', verifyToken, validateObjectId, async (req, res) => {
     try {
         const { date, notes } = req.body
-        if (!date) {
-            return res.status(400).json({ message: 'Date is required' })
-        }
+
 
         // Dates arrive from JSON as strings, so turn them into a Date at midnight
         const bookingDate = new Date(date)

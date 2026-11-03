@@ -12,8 +12,6 @@ const userRoutes = require('./routes/user.routes')
 const venueRoutes = require('./routes/venue.routes')
 const bookingRoutes = require('./routes/booking.routes')
 
-
-
 // Middleware
 app.use(
     cors({
