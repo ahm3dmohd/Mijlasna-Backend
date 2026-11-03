@@ -1,11 +1,10 @@
 const mongoose = require('mongoose')
 const router = require('express').Router()
 const Venue = require('../models/Venue')
-const User = require('../models/User')
 const verifyToken = require('../middleware/verifyToken')
 const validateObjectId = require('../middleware/validateObjectId')
-
-
+const Review = require('../models/Review')
+const Booking = require('../models/Booking')
 
 router.get('/', verifyToken, async (req, res) => {
     try {
@@ -87,3 +86,44 @@ router.delete('/:id', verifyToken, validateObjectId, async (req, res) => {
         return res.json(err)
     }
 })
+
+router.post("/:id/booking", verifyToken, async (req, res) => {
+    try {
+
+        const { date, notes } = req.body
+        const day = date.getDay()
+        const price = null
+        const getVenue = await Venue.findById(req.params.id)
+        if (day >= 0 && day < 4) {
+            price = getVenue.weekDayPrice
+        } else {
+            price = getVenue.weekendPrice
+        }
+
+        const newBooking = await Booking.create({
+            venue: req.params.id,
+            customer: req.user._id,
+            date: date,
+            totalPrice: price,
+            notes: notes
+        })
+
+        res.status(201).json(newBooking)
+
+    } catch (err) {
+        console.log(err)
+        res.status(500).json({ err: err })
+    }
+})
+
+router.get('/:id/reviews', verifyToken, async (req, res) => {
+    try {
+        const getReviews = await Review.find({ venue: req.params.id })
+        res.json(getReviews)
+    } catch (err) {
+        console.log(err)
+        res.status(500).json({ err: err })
+    }
+})
+
+module.exports = router

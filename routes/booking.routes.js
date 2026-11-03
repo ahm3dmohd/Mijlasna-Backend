@@ -3,33 +3,19 @@ const verifyToken = require("../middleware/verifyToken")
 const Booking = require("../models/Booking")
 
 
-router.post("/", verifyToken, async (req, res) => {
-    try {
-        const { venue, date, totalPrice, deposit, notes } = req.body
-        const newBooking = await Booking.create({
-            venue: venue,
-            customer: req.user._id,
-            date: date,
-            totalPrice: totalPrice,
-            deposit: deposit,
-            notes: notes,
-        })
-
-        res.status(201).json(newBooking)
-
-    } catch (err) {
-        console.log(err)
-        res.status(500).json({ err: err.message })
-    }
-})
-
-
 router.get("/", verifyToken, async (req, res) => {
     try {
-        const allBookings = await Booking.find()
-            .populate("venue")
-            .populate("customer")
-
+        const allBookings = null
+        if (req.user.role === 'admin') {
+            allBookings = await Booking.find()
+                .populate("venue")
+                .populate("customer")
+        }
+        else {
+            allBookings = await Booking.find({ customer: req.user._id })
+                .populate("venue")
+                .populate("customer")
+        }
         res.json(allBookings)
 
     } catch (err) {
@@ -52,6 +38,15 @@ router.get("/:bookingId", verifyToken, async (req, res) => {
     }
 })
 
+router.post("/:bookingId/checkout", verifyToken, async (req, res) => {
+    try {
+        const checkout = await Booking.findByIdAndUpdate(req.params.bookingId,{deposit:true})
+        res.json(checkout)
+    }catch(err){
+        res.json(err)
+    }
+
+})
 
 router.put("/:bookingId", verifyToken, async (req, res) => {
     try {

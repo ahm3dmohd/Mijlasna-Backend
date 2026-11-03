@@ -6,8 +6,7 @@ const venueSchema = new mongoose.Schema({
         type: String,
         required: true,
         unique: true,
-        trim: true,
-        
+        trim: true        
     },
     type: {
         type: String,
@@ -30,7 +29,8 @@ const venueSchema = new mongoose.Schema({
         max: 1000
     },
     images: {
-        type: String
+        type: String,
+        required:true
     },
     weekendPrice: {
         type: Number,
