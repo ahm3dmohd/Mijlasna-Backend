@@ -1,99 +1,133 @@
-const mongoose = require('mongoose')
 const router = require('express').Router()
 const Venue = require('../models/Venue')
 const verifyToken = require('../middleware/verifyToken')
+const authorize = require('../middleware/authorize')
 const validateObjectId = require('../middleware/validateObjectId')
 const Review = require('../models/Review')
 const Booking = require('../models/Booking')
 
-router.get('/', verifyToken, async (req, res) => {
+// Sends the right status code for common Mongoose errors
+function handleError(res, err) {
+    console.log(err)
+    if (err.name === 'ValidationError') {
+        return res.status(400).json({ message: err.message })
+    }
+    if (err.code === 11000) {
+        const field = Object.keys(err.keyValue)[0]
+        return res.status(409).json({ message: `${field} already exists` })
+    }
+    return res.status(500).json({ message: 'Internal Server Error' })
+}
+
+// Public: anyone can browse venues
+router.get('/', async (req, res) => {
     try {
         const allVenues = await Venue.find()
-        res.json(allVenues)
+        res.status(200).json(allVenues)
     } catch (err) {
-        return res.json(err)
+        handleError(res, err)
     }
 })
 
-router.get('/:id', verifyToken, validateObjectId, async (req, res) => {
+// Public: anyone can view one venue
+router.get('/:id', validateObjectId, async (req, res) => {
     try {
         const oneVenue = await Venue.findById(req.params.id)
-        res.json(oneVenue)
+        if (!oneVenue) {
+            return res.status(404).json({ message: 'Venue not found' })
+        }
+        res.status(200).json(oneVenue)
     } catch (err) {
-        return res.json(err)
+        handleError(res, err)
     }
 })
 
-router.post('/:id', verifyToken, validateObjectId, async (req, res) => {
+// Owners only: create a venue
+router.post('/', verifyToken, authorize('owner'), async (req, res) => {
     try {
-        if (req.user.type !== 'owner') {
-            return res.json({ 'message': 'You are not permitted to create venues.' })
-        }
-
-        const [name, type, description, address, capacity, weekDayPrice, weekendPrice] = req.body
+        const { name, type, description, address, capacity, images, weekDayPrice, weekendPrice } = req.body
         const newVenue = await Venue.create({
             name: name,
             type: type,
             description: description,
             address: address,
             capacity: capacity,
-            images: null,
+            images: images,
             weekendPrice: weekendPrice,
             weekDayPrice: weekDayPrice,
             owner: req.user._id
         })
-        res.json(newVenue)
+        res.status(201).json(newVenue)
     } catch (err) {
-        return res.json(err)
+        handleError(res, err)
     }
 })
 
-router.put('/:id', verifyToken, validateObjectId, async (req, res) => {
+// Owners only: edit their own venue
+router.put('/:id', verifyToken, authorize('owner'), validateObjectId, async (req, res) => {
     try {
         const getVenueOwner = await Venue.findById(req.params.id)
-        if (req.user.type !== 'owner' || req.user._id !== getVenueOwner.owner) {
-            return res.json({ 'message': 'You do not have permission to edit this venue.' })
+        if (!getVenueOwner) {
+            return res.status(404).json({ message: 'Venue not found' })
+        }
+        if (!getVenueOwner.owner || !getVenueOwner.owner.equals(req.user._id)) {
+            return res.status(403).json({ message: 'You do not have permission to edit this venue.' })
         }
 
-        const [name, type, description, address, capacity, weekDayPrice, weekendPrice] = req.body
-        const editedVenue = await Venue.findByIdAndUpdate(req.params.id, {
-            name: name,
-            type: type,
-            description: description,
-            address: address,
-            capacity: capacity,
-            images: null,
-            weekendPrice: weekendPrice,
-            weekDayPrice: weekDayPrice,
-            owner: req.user._id
-        }, { new: true })
-        res.json(editedVenue)
+        // Only change the fields that were sent, so images and owner are never wiped
+        const { name, type, description, address, capacity, images, weekDayPrice, weekendPrice } = req.body
+        const updates = { name, type, description, address, capacity, images, weekDayPrice, weekendPrice }
+        Object.keys(updates).forEach((key) => {
+            if (updates[key] === undefined) delete updates[key]
+        })
+
+        const editedVenue = await Venue.findByIdAndUpdate(req.params.id, updates, { new: true, runValidators: true })
+        res.status(200).json(editedVenue)
     } catch (err) {
-        return res.json(err)
+        handleError(res, err)
     }
 })
 
-router.delete('/:id', verifyToken, validateObjectId, async (req, res) => {
+// Owners only: delete their own venue
+router.delete('/:id', verifyToken, authorize('owner'), validateObjectId, async (req, res) => {
     try {
         const getVenueOwner = await Venue.findById(req.params.id)
-        if (req.user.type !== 'owner' || req.user._id !== getVenueOwner.owner) {
-            return res.json({ 'message': 'You do not have permission to delete this venue.' })
+        if (!getVenueOwner) {
+            return res.status(404).json({ message: 'Venue not found' })
+        }
+        if (!getVenueOwner.owner || !getVenueOwner.owner.equals(req.user._id)) {
+            return res.status(403).json({ message: 'You do not have permission to delete this venue.' })
         }
         const deletedVenue = await Venue.findByIdAndDelete(req.params.id)
-        res.json(deletedVenue)
-
+        res.status(200).json(deletedVenue)
     } catch (err) {
-        return res.json(err)
+        handleError(res, err)
     }
 })
 
-router.post("/:id/booking", verifyToken, async (req, res) => {
+// Logged in: book a venue on a date
+router.post('/:id/booking', verifyToken, validateObjectId, async (req, res) => {
     try {
-
         const { date, notes } = req.body
-        const day = date.getDay()
-        const price = null
+        if (!date) {
+            return res.status(400).json({ message: 'Date is required' })
+        }
+
+        // Dates arrive from JSON as strings, so turn them into a Date at midnight
+        const bookingDate = new Date(date)
+        if (isNaN(bookingDate)) {
+            return res.status(400).json({ message: 'Invalid date' })
+        }
+        bookingDate.setUTCHours(0, 0, 0, 0)
+
         const getVenue = await Venue.findById(req.params.id)
+        if (!getVenue) {
+            return res.status(404).json({ message: 'Venue not found' })
+        }
+
+        // Sunday to Wednesday = weekday price, Thursday to Saturday = weekend price
+        const day = bookingDate.getUTCDay()
+        let price = null
         if (day >= 0 && day < 4) {
             price = getVenue.weekDayPrice
         } else {
@@ -103,26 +137,24 @@ router.post("/:id/booking", verifyToken, async (req, res) => {
         const newBooking = await Booking.create({
             venue: req.params.id,
             customer: req.user._id,
-            date: date,
+            date: bookingDate,
             totalPrice: price,
             notes: notes
         })
 
         res.status(201).json(newBooking)
-
     } catch (err) {
-        console.log(err)
-        res.status(500).json({ err: err })
+        handleError(res, err)
     }
 })
 
-router.get('/:id/reviews', verifyToken, async (req, res) => {
+// Public: reviews for a venue
+router.get('/:id/reviews', validateObjectId, async (req, res) => {
     try {
         const getReviews = await Review.find({ venue: req.params.id })
-        res.json(getReviews)
+        res.status(200).json(getReviews)
     } catch (err) {
-        console.log(err)
-        res.status(500).json({ err: err })
+        handleError(res, err)
     }
 })
 
