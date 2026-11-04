@@ -88,7 +88,7 @@ router.post("/:id/checkout", validateObjectId, async (req, res) => {
 })
 
 
-router.patch("/:id/status", validateObjectId, async (req, res) => {
+router.put("/:id/status", validateObjectId, async (req, res) => {
     try {
         const { status } = req.body
         const foundBooking = await Booking.findById(req.params.id).populate("venue")
