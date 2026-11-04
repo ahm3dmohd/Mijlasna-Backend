@@ -99,7 +99,11 @@ router.put("/:id/status", validateObjectId, async (req, res) => {
         const ownerCanSet = ["confirmed", "rejected", "completed"]
         const customerCanSet = ["cancelled"]
 
-        if (isOwner && ownerCanSet.includes(status)) {
+        const adminCanSet = ["pending", "confirmed", "rejected", "cancelled", "completed"]
+
+        if (req.user.role === "admin" && adminCanSet.includes(status)) {
+            foundBooking.status = status
+        } else if (isOwner && ownerCanSet.includes(status)) {
             foundBooking.status = status
         } else if (isCustomer && customerCanSet.includes(status)) {
             foundBooking.status = status

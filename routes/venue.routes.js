@@ -1,3 +1,4 @@
+const mongoose = require('mongoose')
 const router = require('express').Router()
 const Venue = require('../models/Venue')
 const verifyToken = require('../middleware/verifyToken')
@@ -20,6 +21,12 @@ function handleError(res, err) {
     return res.status(500).json({ message: 'Internal Server Error' })
 }
 
+// Admin can manage every venue, an owner only their own
+function canManageVenue(venue, user) {
+    if (user.role === 'admin') return true
+    return venue.owner && venue.owner.equals(user._id)
+}
+
 // Public: anyone can browse venues
 router.get('/', async (req, res) => {
     try {
@@ -34,17 +41,18 @@ router.get('/', async (req, res) => {
 router.get('/:id', validateObjectId, async (req, res) => {
     try {
         const oneVenue = await Venue.findById(req.params.id)
-        const blockedDates = await Booking.find({venue: req.params.id})
-        res.status(200).json(oneVenue, blockedDates)
+        res.status(200).json(oneVenue)
     } catch (err) {
         handleError(res, err)
     }
 })
 
-// Owners only: create a venue
-router.post('/', verifyToken, authorize('owner'), async (req, res) => {
+// Owners and admin: create a venue
+// An admin can pass "owner" in the body to create a venue for an owner
+router.post('/', verifyToken, authorize('owner', 'admin'), async (req, res) => {
     try {
         const { name, type, description, address, capacity, images, weekDayPrice, weekendPrice } = req.body
+        const owner = req.user.role === 'admin' && req.body.owner ? req.body.owner : req.user._id
         const newVenue = await Venue.create({
             name: name,
             type: type,
@@ -54,7 +62,7 @@ router.post('/', verifyToken, authorize('owner'), async (req, res) => {
             images: images,
             weekendPrice: weekendPrice,
             weekDayPrice: weekDayPrice,
-            owner: req.user._id
+            owner: owner
         })
         res.status(201).json(newVenue)
     } catch (err) {
@@ -62,11 +70,11 @@ router.post('/', verifyToken, authorize('owner'), async (req, res) => {
     }
 })
 
-// Owners only: edit their own venue
-router.put('/:id', verifyToken, authorize('owner'), validateObjectId, async (req, res) => {
+// Owner edits their own venue, admin edits any venue
+router.put('/:id', verifyToken, authorize('owner', 'admin'), validateObjectId, async (req, res) => {
     try {
         const getVenueOwner = await Venue.findById(req.params.id)
-        if (!getVenueOwner.owner || !getVenueOwner.owner.equals(req.user._id)) {
+        if (!canManageVenue(getVenueOwner, req.user)) {
             return res.status(403).json({ message: 'You do not have permission to edit this venue.' })
         }
 
@@ -84,12 +92,12 @@ router.put('/:id', verifyToken, authorize('owner'), validateObjectId, async (req
     }
 })
 
-// Owners only: delete their own venue
-router.delete('/:id', verifyToken, authorize('owner'), validateObjectId, async (req, res) => {
+// Owner deletes their own venue, admin deletes any venue
+router.delete('/:id', verifyToken, authorize('owner', 'admin'), validateObjectId, async (req, res) => {
     try {
         const getVenueOwner = await Venue.findById(req.params.id)
 
-        if (!getVenueOwner.owner || !getVenueOwner.owner.equals(req.user._id)) {
+        if (!canManageVenue(getVenueOwner, req.user)) {
             return res.status(403).json({ message: 'You do not have permission to delete this venue.' })
         }
         const deletedVenue = await Venue.findByIdAndDelete(req.params.id)
@@ -171,6 +179,128 @@ router.get('/:id/reviews', validateObjectId, async (req, res) => {
     try {
         const getReviews = await Review.find({ venue: req.params.id })
         res.status(200).json(getReviews)
+    } catch (err) {
+        handleError(res, err)
+    }
+})
+
+// ---------- Blocked dates ----------
+
+// Turns a date string into a Date at midnight (UTC), or null if invalid
+function toDay(date) {
+    const day = new Date(date)
+    if (!date || isNaN(day)) return null
+    day.setUTCHours(0, 0, 0, 0)
+    return day
+}
+
+// Public: blocked dates for a venue
+router.get('/:id/blocked-dates', validateObjectId, async (req, res) => {
+    try {
+        const blockedDates = await BlockedDate.find({ venue: req.params.id }).sort({ date: 1 })
+        res.status(200).json(blockedDates)
+    } catch (err) {
+        handleError(res, err)
+    }
+})
+
+// Venue owner or admin: block a date
+router.post('/:id/blocked-dates', verifyToken, authorize('owner', 'admin'), validateObjectId, async (req, res) => {
+    try {
+        const venue = await Venue.findById(req.params.id)
+        if (!venue) {
+            return res.status(404).json({ message: 'Venue not found' })
+        }
+        if (!canManageVenue(venue, req.user)) {
+            return res.status(403).json({ message: 'You cannot block dates on this venue.' })
+        }
+
+        const { date, slotLabel, startTime, endTime, reason } = req.body
+        const day = toDay(date)
+        if (!day) {
+            return res.status(400).json({ message: 'Invalid date' })
+        }
+
+        const newBlockedDate = await BlockedDate.create({
+            venue: req.params.id,
+            date: day,
+            slotLabel: slotLabel,
+            startTime: startTime,
+            endTime: endTime,
+            reason: reason
+        })
+        res.status(201).json(newBlockedDate)
+    } catch (err) {
+        if (err.code === 11000) {
+            return res.status(409).json({ message: 'This date is already blocked' })
+        }
+        handleError(res, err)
+    }
+})
+
+// Venue owner or admin: edit a blocked date
+router.put('/:id/blocked-dates/:blockedId', verifyToken, authorize('owner', 'admin'), validateObjectId, async (req, res) => {
+    try {
+        if (!mongoose.Types.ObjectId.isValid(req.params.blockedId)) {
+            return res.status(404).json({ message: 'Invalid id' })
+        }
+        const venue = await Venue.findById(req.params.id)
+        if (!venue) {
+            return res.status(404).json({ message: 'Venue not found' })
+        }
+        if (!canManageVenue(venue, req.user)) {
+            return res.status(403).json({ message: 'You cannot edit blocked dates on this venue.' })
+        }
+
+        // Only change the fields that were sent
+        const { date, slotLabel, startTime, endTime, reason } = req.body
+        const updates = { slotLabel, startTime, endTime, reason }
+        if (date !== undefined) {
+            updates.date = toDay(date)
+            if (!updates.date) {
+                return res.status(400).json({ message: 'Invalid date' })
+            }
+        }
+        Object.keys(updates).forEach((key) => {
+            if (updates[key] === undefined) delete updates[key]
+        })
+
+        const editedBlockedDate = await BlockedDate.findOneAndUpdate(
+            { _id: req.params.blockedId, venue: req.params.id },
+            updates,
+            { new: true, runValidators: true }
+        )
+        if (!editedBlockedDate) {
+            return res.status(404).json({ message: 'Blocked date not found' })
+        }
+        res.status(200).json(editedBlockedDate)
+    } catch (err) {
+        if (err.code === 11000) {
+            return res.status(409).json({ message: 'This date is already blocked' })
+        }
+        handleError(res, err)
+    }
+})
+
+// Venue owner or admin: unblock a date
+router.delete('/:id/blocked-dates/:blockedId', verifyToken, authorize('owner', 'admin'), validateObjectId, async (req, res) => {
+    try {
+        if (!mongoose.Types.ObjectId.isValid(req.params.blockedId)) {
+            return res.status(404).json({ message: 'Invalid id' })
+        }
+        const venue = await Venue.findById(req.params.id)
+        if (!venue) {
+            return res.status(404).json({ message: 'Venue not found' })
+        }
+        if (!canManageVenue(venue, req.user)) {
+            return res.status(403).json({ message: 'You cannot delete blocked dates on this venue.' })
+        }
+
+        const deletedBlockedDate = await BlockedDate.findOneAndDelete({ _id: req.params.blockedId, venue: req.params.id })
+        if (!deletedBlockedDate) {
+            return res.status(404).json({ message: 'Blocked date not found' })
+        }
+        res.status(200).json(deletedBlockedDate)
     } catch (err) {
         handleError(res, err)
     }
