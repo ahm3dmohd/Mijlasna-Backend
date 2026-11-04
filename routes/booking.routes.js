@@ -4,7 +4,7 @@ const authorize = require("../middleware/authorize")
 const validateObjectId = require("../middleware/validateObjectId")
 const Booking = require("../models/Booking")
 const Venue = require("../models/Venue")
-
+const BlockedDate = require('../models/Blocked-Date')
 router.use(verifyToken)
 
 
@@ -137,29 +137,64 @@ router.put("/:id/status", validateObjectId, async (req, res) => {
 
 router.put("/:id", validateObjectId, async (req, res) => {
     try {
-        const foundBooking = await Booking.findById(req.params.id).populate("venue")
+       const { date, notes } = req.body
 
-        if (!foundBooking) {
-            return res.status(404).json({ message: "Booking not found" })
+
+        // Dates arrive from JSON as strings, so turn them into a Date at midnight
+        const bookingDate = new Date(date)
+        if (isNaN(bookingDate)) {
+            return res.status(400).json({ message: 'Invalid date' })
+        }
+        bookingDate.setUTCHours(0, 0, 0, 0)
+
+        const today = new Date()
+        today.setUTCHours(0, 0, 0, 0)
+        if (bookingDate < today) {
+            return res.status(400).json({ message: 'You cannot book a date in the past' })
+        }
+        const thisBooking = await Booking.findById(req.params.id)
+        const getVenue = await Venue.findById(thisBooking.venue)
+        if (!getVenue) {
+            return res.status(404).json({ message: 'Venue not found' })
         }
 
-        // The owner is stored on the venue, not on the booking
-        const isCustomer = foundBooking.customer.equals(req.user._id)
-        const isVenueOwner = foundBooking.venue && foundBooking.venue.owner && foundBooking.venue.owner.equals(req.user._id)
+        // Is the date blocked by the owner?
+        const blocked = await BlockedDate.findOne({ venue: req.params.id, date: bookingDate })
+        if (blocked) {
+            return res.status(409).json({ message: 'This date is not available' })
+        }
 
-        if (isCustomer || isVenueOwner || req.user.role === 'admin') {
-            const updatedBooking = await Booking.findByIdAndUpdate(
-                req.params.id,
-                { notes: req.body.notes },
-                { new: true, runValidators: true }
-            )
-            return res.status(200).json(updatedBooking)
+        // Is the date already booked? (rejected and cancelled bookings don't count)
+        const taken = await Booking.findOne({
+            venue: req.params.id,
+            date: bookingDate,
+            status: { $in: ['pending', 'confirmed'] }
+        })
+        if (taken) {
+            return res.status(409).json({ message: 'This date is already booked' })
+        }
+
+        // Sunday to Wednesday = weekday price, Thursday to Saturday = weekend price
+        const day = bookingDate.getUTCDay()
+        let price = null
+        if (day >= 0 && day < 4) {
+            price = getVenue.weekDayPrice
         } else {
-            return res.status(403).json({ message: "You cannot edit this booking" })
+            price = getVenue.weekendPrice
         }
+
+        const newBooking = await Booking.findByIdAndUpdate(req.params.id,{
+            date: bookingDate,
+            notes: notes
+        })
+
+        res.status(201).json(newBooking)
     } catch (err) {
-        console.log(err)
-        res.status(500).json({ message: "Internal Server Error" })
+        // Two people booked the same date at the same moment: the database index stops the second one
+        if (err.code === 11000) {
+            return res.status(409).json({ message: 'This date is already booked' })
+        }
+        handleError(res, err)
     }
 })
 
