@@ -74,6 +74,9 @@ router.post('/', verifyToken, authorize('owner', 'admin'), async (req, res) => {
 router.put('/:id', verifyToken, authorize('owner', 'admin'), validateObjectId, async (req, res) => {
     try {
         const getVenueOwner = await Venue.findById(req.params.id)
+        if (!getVenueOwner) {
+            return res.status(404).json({ message: 'Venue not found' })
+        }
         if (!canManageVenue(getVenueOwner, req.user)) {
             return res.status(403).json({ message: 'You do not have permission to edit this venue.' })
         }
@@ -96,6 +99,9 @@ router.put('/:id', verifyToken, authorize('owner', 'admin'), validateObjectId, a
 router.delete('/:id', verifyToken, authorize('owner', 'admin'), validateObjectId, async (req, res) => {
     try {
         const getVenueOwner = await Venue.findById(req.params.id)
+        if (!getVenueOwner) {
+            return res.status(404).json({ message: 'Venue not found' })
+        }
 
         if (!canManageVenue(getVenueOwner, req.user)) {
             return res.status(403).json({ message: 'You do not have permission to delete this venue.' })

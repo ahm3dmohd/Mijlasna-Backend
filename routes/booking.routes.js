@@ -56,6 +56,10 @@ router.get("/:id", validateObjectId, async (req, res) => {
             .populate("venue")
             .populate("customer")
 
+        if (!foundBooking) {
+            return res.status(404).json({ message: "Booking not found" })
+        }
+
         if (!canView(foundBooking, req.user)) {
             return res.status(403).json({ message: "You cannot view this booking" })
         }
@@ -70,6 +74,10 @@ router.get("/:id", validateObjectId, async (req, res) => {
 router.post("/:id/checkout", validateObjectId, async (req, res) => {
     try {
         const foundBooking = await Booking.findById(req.params.id)
+
+        if (!foundBooking) {
+            return res.status(404).json({ message: "Booking not found" })
+        }
 
         if (!foundBooking.customer.equals(req.user._id)) {
             return res.status(403).json({ message: "You cannot pay for this booking" })
@@ -92,6 +100,10 @@ router.put("/:id/status", validateObjectId, async (req, res) => {
     try {
         const { status } = req.body
         const foundBooking = await Booking.findById(req.params.id).populate("venue")
+
+        if (!foundBooking) {
+            return res.status(404).json({ message: "Booking not found" })
+        }
 
         const isOwner = foundBooking.venue && foundBooking.venue.owner && foundBooking.venue.owner.equals(req.user._id)
         const isCustomer = foundBooking.customer.equals(req.user._id)
@@ -125,11 +137,17 @@ router.put("/:id/status", validateObjectId, async (req, res) => {
 
 router.put("/:id", validateObjectId, async (req, res) => {
     try {
-        const foundBooking = await Booking.findById(req.params.id)
+        const foundBooking = await Booking.findById(req.params.id).populate("venue")
 
-        if (foundBooking.customer.equals(req.user._id)
-            || foundBooking.owner.equals(req.user._id)
-            || req.user.role === 'admin') {
+        if (!foundBooking) {
+            return res.status(404).json({ message: "Booking not found" })
+        }
+
+        // The owner is stored on the venue, not on the booking
+        const isCustomer = foundBooking.customer.equals(req.user._id)
+        const isVenueOwner = foundBooking.venue && foundBooking.venue.owner && foundBooking.venue.owner.equals(req.user._id)
+
+        if (isCustomer || isVenueOwner || req.user.role === 'admin') {
             const updatedBooking = await Booking.findByIdAndUpdate(
                 req.params.id,
                 { notes: req.body.notes },
@@ -148,11 +166,17 @@ router.put("/:id", validateObjectId, async (req, res) => {
 
 router.delete("/:id", validateObjectId, async (req, res) => {
     try {
-        const foundBooking = await Booking.findById(req.params.id)
+        const foundBooking = await Booking.findById(req.params.id).populate("venue")
 
-        if (foundBooking.customer.equals(req.user._id)
-            || foundBooking.owner.equals(req.user._id)
-            || req.user.role === 'admin') {
+        if (!foundBooking) {
+            return res.status(404).json({ message: "Booking not found" })
+        }
+
+        // The owner is stored on the venue, not on the booking
+        const isCustomer = foundBooking.customer.equals(req.user._id)
+        const isVenueOwner = foundBooking.venue && foundBooking.venue.owner && foundBooking.venue.owner.equals(req.user._id)
+
+        if (isCustomer || isVenueOwner || req.user.role === 'admin') {
             const deletedBooking = await Booking.findByIdAndDelete(req.params.id)
             return res.status(200).json(deletedBooking)
         } else {
