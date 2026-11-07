@@ -137,7 +137,7 @@ router.put("/:id/status", validateObjectId, async (req, res) => {
 
 router.put("/:id", validateObjectId, async (req, res) => {
     try {
-       const { date, notes } = req.body
+        const { date, notes } = req.body
 
 
         // Dates arrive from JSON as strings, so turn them into a Date at midnight
@@ -183,7 +183,7 @@ router.put("/:id", validateObjectId, async (req, res) => {
             price = getVenue.weekendPrice
         }
 
-        const newBooking = await Booking.findByIdAndUpdate(req.params.id,{
+        const newBooking = await Booking.findByIdAndUpdate(req.params.id, {
             date: bookingDate,
             notes: notes
         })

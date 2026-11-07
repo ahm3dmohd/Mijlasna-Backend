@@ -221,18 +221,17 @@ router.post('/:id/blocked-dates', verifyToken, authorize('owner', 'admin'), vali
             return res.status(403).json({ message: 'You cannot block dates on this venue.' })
         }
 
-        const { date, slotLabel, startTime, endTime, reason } = req.body
-        const day = toDay(date)
+        const { startTime, endTime, reasonCategory, reason } = req.body
+        const day = toDay(startTime)
         if (!day) {
             return res.status(400).json({ message: 'Invalid date' })
         }
 
         const newBlockedDate = await BlockedDate.create({
             venue: req.params.id,
-            date: day,
-            slotLabel: slotLabel,
             startTime: startTime,
             endTime: endTime,
+            reasonCategory: reasonCategory,
             reason: reason
         })
         res.status(201).json(newBlockedDate)
@@ -259,10 +258,10 @@ router.put('/:id/blocked-dates/:blockedId', verifyToken, authorize('owner', 'adm
         }
 
         // Only change the fields that were sent
-        const { date, slotLabel, startTime, endTime, reason } = req.body
-        const updates = { slotLabel, startTime, endTime, reason }
+        const { startTime, endTime, reasonCategory, reason } = req.body
+        const updates = { startTime, endTime, reasonCategory, reason }
         if (date !== undefined) {
-            updates.date = toDay(date)
+            updates.date = toDay(start - time)
             if (!updates.date) {
                 return res.status(400).json({ message: 'Invalid date' })
             }

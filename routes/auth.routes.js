@@ -10,14 +10,14 @@ router.post("/sign-up", async (req, res) => {
     const { username, password, email, phone, role } = req.body;
 
     // Validation
-    if (!username || !password || !email || !phone) return res.status(400).json({message: "All fields are required.",});
-    if (password.length < 6) return res.status(400).json({message: "Password must be more than 6 characters",});
-
+    if (!username || !password || !email || !phone) return res.status(400).json({ message: "All fields are required.", });
+    if (password.length < 6) return res.status(400).json({ message: "Password must be more than 6 characters", });
+    if (role === "admin") { return res.status(401).json({ Message: 'You are not allowed to create an admin account.' }) }
     const user = await User.create({
-      username:username,
-      email:email,
-      phone:phone,
-      role:role,
+      username: username,
+      email: email,
+      phone: phone,
+      role: role,
       hashedPassword: await bcrypt.hash(password, 12),
 
     });
@@ -57,7 +57,7 @@ router.post("/sign-in", async (req, res) => {
         message: "Username and password are required.",
       });
     }
-    const user = await User.findOne({ username:username.toLowerCase().trim() });
+    const user = await User.findOne({ username: username.toLowerCase().trim() });
     if (!user) {
       return res.status(401).json({ message: "Invalid credentials." });
     }
@@ -71,7 +71,7 @@ router.post("/sign-in", async (req, res) => {
     }
 
     // Construct the payload
-    const payload = { username: user.username, _id: user._id, role: user.role};
+    const payload = { username: user.username, _id: user._id, role: user.role };
 
 
     const accessToken = jwt.sign(payload, process.env.JWT_SECRET, {

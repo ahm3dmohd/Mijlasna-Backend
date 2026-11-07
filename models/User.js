@@ -7,19 +7,20 @@ const userSchema = new mongoose.Schema(
       required: true,
       unique: true,
       trim: true,
-      lowercase:true
+      lowercase: true
     },
     email: {
       type: String,
-      required:true,
-      unique:true,
-      trim:true,
-      lowercase:true,
+      unique: true,
+      trim: true,
+      lowercase: true,
     },
     phone: {
-      type: String,
-      unique:true,
-      trim:true,
+      type: Number,
+      unique: true,
+      trim: true,
+      min: 19999999,
+      max: 69999999
     },
     hashedPassword: {
       type: String,
@@ -27,7 +28,7 @@ const userSchema = new mongoose.Schema(
     },
     role: {
       type: String,
-      enum: ["customer","owner","admin"],
+      enum: ["customer", "owner", "admin"],
       default: "customer"
     }
   },
