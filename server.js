@@ -24,6 +24,9 @@ app.use(morgan('dev'))
 
 
 // Routes
+app.get('/', (req, res) => {
+    res.status(200).json({ Message: 'Welcome Home!' })
+})
 app.use('/auth', authRoutes)
 app.use('/users', userRoutes)
 app.use('/venues', venueRoutes)

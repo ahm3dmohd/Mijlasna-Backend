@@ -10,7 +10,7 @@ function verifyToken(req, res, next) {
 
     // Assign decoded payload to req.user. Some tokens wrap the payload
     // in a `payload` property while others put claims at the root.
-    req.user =  decoded;
+    req.user = decoded;
 
     // Call next() to invoke the next middleware function
     next();

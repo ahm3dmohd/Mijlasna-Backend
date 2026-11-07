@@ -6,7 +6,7 @@ const venueSchema = new mongoose.Schema({
         type: String,
         required: true,
         unique: true,
-        trim: true        
+        trim: true
     },
     type: {
         type: String,
@@ -20,8 +20,7 @@ const venueSchema = new mongoose.Schema({
     address: {
         type: String,
         required: true,
-        unique: true,
-        trim: true,
+        trim: true
     },
     capacity: {
         type: Number,

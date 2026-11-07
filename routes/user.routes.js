@@ -11,22 +11,22 @@ router.use(verifyToken)
 // Get User /users/me (which is my profile)
 
 router.get("/me", async (req, res) => {
-    try {
-        const user = await User.findById(req.user._id)
-        if (!user) return res.status(404).json({message: "User not found"})
-            res.status(200).json(user)
-    }catch(err) {
-        console.log(err)
-        res.status(500).json({ message: "Internal Server Error" })
-    }
+  try {
+    const user = await User.findById(req.user._id)
+    if (!user) return res.status(404).json({ message: "User not found" })
+    res.status(200).json(user)
+  } catch (err) {
+    console.log(err)
+    res.status(500).json({ message: "Internal Server Error" })
+  }
 })
 
 router.put("/me", async (req, res) => {
-    try {
-        const { username, email, phone } = req.body
+  try {
+    const { username, email, phone } = req.body
 
-        const user = await User.findByIdAndUpdate(req.user._id, {username, email, phone}, {new:true, runValidators:true})
-        if (!user) return res.status(404).json({ message: "User not found" });
+    const user = await User.findByIdAndUpdate(req.user._id, { username, email, phone }, { new: true, runValidators: true })
+    if (!user) return res.status(404).json({ message: "User not found" });
     res.status(200).json(user);
   } catch (err) {
     console.log(err);
@@ -39,17 +39,17 @@ router.put("/me", async (req, res) => {
     }
     res.status(500).json({ message: "Internal Server Error" });
   }
-    })
+})
 
 router.delete("/me", async (req, res) => {
-    try {
-        const user = await User.findByIdAndDelete(req.user._id)
-        if (!user) return res.status(404).json({message : "User not found!"})
-            res.status(200).json({message: "User deleted successfully.."})
-    }catch(err) {
-        console.log(err)
-        res.status(500).json({ message: "Internal Server Error" })
-    }
+  try {
+    const user = await User.findByIdAndDelete(req.user._id)
+    if (!user) return res.status(404).json({ message: "User not found!" })
+    res.status(200).json({ message: "User deleted successfully.." })
+  } catch (err) {
+    console.log(err)
+    res.status(500).json({ message: "Internal Server Error" })
+  }
 })
 
 
