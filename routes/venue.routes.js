@@ -110,6 +110,12 @@ router.delete('/:id', verifyToken, authorize('owner', 'admin'), validateObjectId
             return res.status(403).json({ message: 'You do not have permission to delete this venue.' })
         }
         const deletedVenue = await Venue.findByIdAndDelete(req.params.id)
+
+        // Remove everything that belonged to this venue so nothing is left pointing at it
+        await Booking.deleteMany({ venue: req.params.id })
+        await BlockedDate.deleteMany({ venue: req.params.id })
+        await Review.deleteMany({ venue: req.params.id })
+
         res.status(200).json(deletedVenue)
     } catch (err) {
         handleError(res, err)
