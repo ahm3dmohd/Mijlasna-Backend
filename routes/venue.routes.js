@@ -41,6 +41,9 @@ router.get('/', async (req, res) => {
 router.get('/:id', validateObjectId, async (req, res) => {
     try {
         const oneVenue = await Venue.findById(req.params.id)
+        if (!oneVenue) {
+            return res.status(404).json({ message: 'Venue not found' })
+        }
         res.status(200).json(oneVenue)
     } catch (err) {
         handleError(res, err)
@@ -198,24 +201,46 @@ router.get('/:id/reviews', validateObjectId, async (req, res) => {
     }
 })
 
-router.post('/:id/reviews', verifyToken, async (req, res) => {
+// Logged in: write a review for a venue
+router.post('/:id/reviews', verifyToken, validateObjectId, async (req, res) => {
     try {
+        const venue = await Venue.findById(req.params.id)
+        if (!venue) {
+            return res.status(404).json({ message: 'Venue not found' })
+        }
+
         const { rating, comment } = req.body
-        const newReview = await Review.create({ rating: rating, comment: comment })
+        const newReview = await Review.create({
+            rating: rating,
+            comment: comment,
+            venue: req.params.id,
+            customer: req.user._id
+        })
         res.status(201).json(newReview)
     } catch (err) {
         handleError(res, err)
     }
 })
 
-router.delete('/:id/reviews/:rid', verifyToken, async (req, res) => {
+// The review's author, the venue owner or an admin: delete a review
+router.delete('/:id/reviews/:rid', verifyToken, validateObjectId, async (req, res) => {
     try {
+        if (!mongoose.Types.ObjectId.isValid(req.params.rid)) {
+            return res.status(404).json({ message: 'Invalid id' })
+        }
+
         const getVenueOwner = await Venue.findById(req.params.id)
         if (!getVenueOwner) {
             return res.status(404).json({ message: 'Venue not found' })
         }
-        const getReview = await Review.findById(req.params.rid)
-        if (!canManageVenue(getVenueOwner, req.user) || getReview.customer !== req.user._id) {
+
+        const getReview = await Review.findOne({ _id: req.params.rid, venue: req.params.id })
+        if (!getReview) {
+            return res.status(404).json({ message: 'Review not found' })
+        }
+
+        const isAuthor = getReview.customer.equals(req.user._id)
+        if (!isAuthor && !canManageVenue(getVenueOwner, req.user)) {
             return res.status(403).json({ message: 'You do not have permission to delete this review.' })
         }
 
@@ -282,7 +307,7 @@ router.post('/:id/blocked-dates', verifyToken, authorize('owner', 'admin'), vali
             timeOfDay: timeOfDay,
         })
         if (alreadyBlocked) {
-            return res.status(409).json({ message: 'This date is already booked' })
+            return res.status(409).json({ message: 'This date is already blocked' })
         }
 
         const newBlockedDate = await BlockedDate.create({
