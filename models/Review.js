@@ -11,8 +11,9 @@ const reviewSchema = new mongoose.Schema({
     comment: {
         type: String,
         required: true,
-        min: 1,
-        max: 200
+        trim: true,
+        minLength: 1,
+        maxLength: 200
     },
     venue: {
         type: mongoose.Schema.Types.ObjectId,

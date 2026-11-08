@@ -43,6 +43,14 @@ const bookingSchema = new mongoose.Schema({
     }
 }, { timestamps: true })
 
+// The database refuses a second active booking for the same venue, date and time slot,
+// even if two people press "Book" at the same moment.
+// Rejected and cancelled bookings don't count, so the slot frees up again.
+bookingSchema.index(
+    { venue: 1, date: 1, timeOfDay: 1 },
+    { unique: true, partialFilterExpression: { status: { $in: ['pending', 'confirmed'] } } }
+)
+
 const Booking = mongoose.model('Booking', bookingSchema)
 
 module.exports = Booking

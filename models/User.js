@@ -19,7 +19,7 @@ const userSchema = new mongoose.Schema(
       type: Number,
       unique: true,
       trim: true,
-      min: 19999999,
+      min: 10000000,
       max: 69999999
     },
     hashedPassword: {

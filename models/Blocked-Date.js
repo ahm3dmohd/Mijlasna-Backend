@@ -28,6 +28,9 @@ const blockedDateSchema = new mongoose.Schema({
 
 }, { timestamps: true })
 
+// The same venue, date and time slot can only be blocked once
+blockedDateSchema.index({ venue: 1, date: 1, timeOfDay: 1 }, { unique: true })
+
 const BlockedDate = mongoose.model('BlockedDate', blockedDateSchema)
 
 module.exports = BlockedDate
