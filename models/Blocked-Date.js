@@ -6,18 +6,19 @@ const blockedDateSchema = new mongoose.Schema({
         ref: "Venue",
         required: true
     },
-    startTime: {
+    date: {
         type: Date,
         required: true
     },
-    endTime: {
-        type: Date,
-        required: true
+    timeOfDay:{
+        type: String,
+        required:true,
+        enum: ['Morning 7 to 12','Evening 7 to 12']
     },
     reasonCategory: {
         type: String,
         enum: ['Maintenance', 'Holiday', 'Private Booking', 'Renovation', 'Other'],
-        default: 'Other'
+        default: 'Private Booking'
     },
     reason: {
         type: String,
@@ -27,16 +28,6 @@ const blockedDateSchema = new mongoose.Schema({
 
 }, { timestamps: true })
 
-// Index to make date-range queries efficient for a specific venue
-blockedDateSchema.index({ venue: 1, startTime: 1, endTime: 1 });
-
-// Pre-save hook to ensure logical date ordering
-blockedDateSchema.pre('save', function (next) {
-    if (this.startTime >= this.endTime) {
-        return next(new Error('startTime must be strictly before endTime.'));
-    }
-    next();
-});
 const BlockedDate = mongoose.model('BlockedDate', blockedDateSchema)
 
 module.exports = BlockedDate
