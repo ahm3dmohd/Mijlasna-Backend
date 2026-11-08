@@ -137,7 +137,7 @@ router.put("/:id/status", validateObjectId, async (req, res) => {
 
 router.put("/:id", validateObjectId, async (req, res) => {
     try {
-        const { date, notes } = req.body
+        const { date, notes, timeOfDay } = req.body
 
 
         // Dates arrive from JSON as strings, so turn them into a Date at midnight
@@ -158,6 +158,13 @@ router.put("/:id", validateObjectId, async (req, res) => {
             return res.status(404).json({ message: 'Venue not found' })
         }
 
+        const rawDate = new Date(req.body.date);
+        bookingDate = new Date(Date.UTC(
+            rawDate.getUTCFullYear(),
+            rawDate.getUTCMonth(),
+            rawDate.getUTCDate()
+        ));
+
         // Is the date blocked by the owner?
         const blocked = await BlockedDate.findOne({ venue: req.params.id, date: bookingDate })
         if (blocked) {
@@ -168,6 +175,7 @@ router.put("/:id", validateObjectId, async (req, res) => {
         const taken = await Booking.findOne({
             venue: req.params.id,
             date: bookingDate,
+            timeOfDay: timeOfDay,
             status: { $in: ['pending', 'confirmed'] }
         })
         if (taken) {
@@ -185,6 +193,7 @@ router.put("/:id", validateObjectId, async (req, res) => {
 
         const newBooking = await Booking.findByIdAndUpdate(req.params.id, {
             date: bookingDate,
+            timeOfDay: timeOfDay,
             notes: notes
         })
 

@@ -15,6 +15,11 @@ const bookingSchema = new mongoose.Schema({
         type: Date,
         required: true
     },
+    timeOfDay: {
+        type: String,
+        required: true,
+        enum: ['Morning 7 to 12', 'Evening 7 to 12']
+    },
     totalPrice: {
         type: Number,
         required: true
@@ -37,14 +42,6 @@ const bookingSchema = new mongoose.Schema({
         trim: true
     }
 }, { timestamps: true })
-
-// The database refuses a second active booking for the same venue and date,
-// even if two people press "Book" at the same moment.
-// Rejected and cancelled bookings don't count, so the date frees up again.
-bookingSchema.index(
-    { venue: 1, date: 1 },
-    { unique: true, partialFilterExpression: { status: { $in: ['pending', 'confirmed'] } } }
-)
 
 const Booking = mongoose.model('Booking', bookingSchema)
 

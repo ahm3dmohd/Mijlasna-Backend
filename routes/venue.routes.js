@@ -116,11 +116,17 @@ router.delete('/:id', verifyToken, authorize('owner', 'admin'), validateObjectId
 // Logged in: book a venue on a date
 router.post('/:id/booking', verifyToken, validateObjectId, async (req, res) => {
     try {
-        const { date, notes } = req.body
+        const { date, timeOfDay, notes } = req.body
 
 
         // Dates arrive from JSON as strings, so turn them into a Date at midnight
-        const bookingDate = new Date(date)
+        const rawDate = new Date(date);
+        const bookingDate = new Date(Date.UTC(
+            rawDate.getUTCFullYear(),
+            rawDate.getUTCMonth(),
+            rawDate.getUTCDate()
+        ));
+
         if (isNaN(bookingDate)) {
             return res.status(400).json({ message: 'Invalid date' })
         }
@@ -138,7 +144,7 @@ router.post('/:id/booking', verifyToken, validateObjectId, async (req, res) => {
         }
 
         // Is the date blocked by the owner?
-        const blocked = await BlockedDate.findOne({ venue: req.params.id, date: bookingDate })
+        const blocked = await BlockedDate.findOne({ venue: req.params.id, date: bookingDate, timeOfDay: timeOfDay })
         if (blocked) {
             return res.status(409).json({ message: 'This date is not available' })
         }
@@ -147,6 +153,7 @@ router.post('/:id/booking', verifyToken, validateObjectId, async (req, res) => {
         const taken = await Booking.findOne({
             venue: req.params.id,
             date: bookingDate,
+            timeOfDay: timeOfDay,
             status: { $in: ['pending', 'confirmed'] }
         })
         if (taken) {
@@ -166,6 +173,7 @@ router.post('/:id/booking', verifyToken, validateObjectId, async (req, res) => {
             venue: req.params.id,
             customer: req.user._id,
             date: bookingDate,
+            timeOfDay: timeOfDay,
             totalPrice: price,
             notes: notes
         })
@@ -185,6 +193,34 @@ router.get('/:id/reviews', validateObjectId, async (req, res) => {
     try {
         const getReviews = await Review.find({ venue: req.params.id })
         res.status(200).json(getReviews)
+    } catch (err) {
+        handleError(res, err)
+    }
+})
+
+router.post('/:id/reviews', verifyToken, async (req, res) => {
+    try {
+        const { rating, comment } = req.body
+        const newReview = await Review.create({ rating: rating, comment: comment })
+        res.status(201).json(newReview)
+    } catch (err) {
+        handleError(res, err)
+    }
+})
+
+router.delete('/:id/reviews/:rid', verifyToken, async (req, res) => {
+    try {
+        const getVenueOwner = await Venue.findById(req.params.id)
+        if (!getVenueOwner) {
+            return res.status(404).json({ message: 'Venue not found' })
+        }
+        const getReview = await Review.findById(req.params.rid)
+        if (!canManageVenue(getVenueOwner, req.user) || getReview.customer !== req.user._id) {
+            return res.status(403).json({ message: 'You do not have permission to delete this review.' })
+        }
+
+        const deletedReview = await Review.findByIdAndDelete(req.params.rid)
+        res.status(200).json(deletedReview)
     } catch (err) {
         handleError(res, err)
     }
@@ -221,16 +257,38 @@ router.post('/:id/blocked-dates', verifyToken, authorize('owner', 'admin'), vali
             return res.status(403).json({ message: 'You cannot block dates on this venue.' })
         }
 
-        const { startTime, endTime, reasonCategory, reason } = req.body
-        const day = toDay(startTime)
+        const { date, timeOfDay, reasonCategory, reason } = req.body
+        const day = toDay(date)
         if (!day) {
             return res.status(400).json({ message: 'Invalid date' })
         }
 
+        const rawDate = new Date(req.body.date);
+        const blockedDate = new Date(Date.UTC(
+            rawDate.getUTCFullYear(),
+            rawDate.getUTCMonth(),
+            rawDate.getUTCDate()
+        ));
+
+        const today = new Date()
+        today.setUTCHours(0, 0, 0, 0)
+        if (blockedDate < today) {
+            return res.status(400).json({ message: 'You cannot block a date in the past' })
+        }
+
+        const alreadyBlocked = await BlockedDate.findOne({
+            venue: req.params.id,
+            date: blockedDate,
+            timeOfDay: timeOfDay,
+        })
+        if (alreadyBlocked) {
+            return res.status(409).json({ message: 'This date is already booked' })
+        }
+
         const newBlockedDate = await BlockedDate.create({
             venue: req.params.id,
-            startTime: startTime,
-            endTime: endTime,
+            date: blockedDate,
+            timeOfDay: timeOfDay,
             reasonCategory: reasonCategory,
             reason: reason
         })
@@ -249,23 +307,66 @@ router.put('/:id/blocked-dates/:blockedId', verifyToken, authorize('owner', 'adm
         if (!mongoose.Types.ObjectId.isValid(req.params.blockedId)) {
             return res.status(404).json({ message: 'Invalid id' })
         }
+
         const venue = await Venue.findById(req.params.id)
         if (!venue) {
             return res.status(404).json({ message: 'Venue not found' })
         }
+
         if (!canManageVenue(venue, req.user)) {
             return res.status(403).json({ message: 'You cannot edit blocked dates on this venue.' })
         }
 
-        // Only change the fields that were sent
-        const { startTime, endTime, reasonCategory, reason } = req.body
-        const updates = { startTime, endTime, reasonCategory, reason }
+        const { date, timeOfDay, reasonCategory, reason } = req.body
+        const updates = { date, timeOfDay, reasonCategory, reason }
+
+        // If a date is provided, normalize it and check if it's in the past
         if (date !== undefined) {
-            updates.date = toDay(start - time)
-            if (!updates.date) {
-                return res.status(400).json({ message: 'Invalid date' })
+            const rawDate = new Date(date)
+            if (isNaN(rawDate.getTime())) {
+                return res.status(400).json({ message: 'Invalid date format' })
+            }
+
+            const normalizedDate = new Date(Date.UTC(
+                rawDate.getUTCFullYear(),
+                rawDate.getUTCMonth(),
+                rawDate.getUTCDate()
+            ))
+
+            const today = new Date()
+            today.setUTCHours(0, 0, 0, 0)
+
+            if (normalizedDate < today) {
+                return res.status(400).json({ message: 'You cannot block a date in the past' })
+            }
+
+            updates.date = normalizedDate
+        }
+
+        // If either date or timeOfDay is being updated, check for conflicts (excluding current record)
+        if (date !== undefined || timeOfDay !== undefined) {
+            // Find the existing record to fallback if only one of them is provided in req.body
+            const existingBlock = await BlockedDate.findById(req.params.blockedId)
+            if (!existingBlock) {
+                return res.status(404).json({ message: 'Blocked date not found' })
+            }
+
+            const targetDate = updates.date || existingBlock.date
+            const targetTime = timeOfDay !== undefined ? timeOfDay : existingBlock.timeOfDay
+
+            const alreadyBlocked = await BlockedDate.findOne({
+                _id: { $ne: req.params.blockedId }, // EXCLUDE current record so it doesn't conflict with itself
+                venue: req.params.id,
+                date: targetDate,
+                timeOfDay: targetTime,
+            })
+
+            if (alreadyBlocked) {
+                return res.status(409).json({ message: 'This date and time slot is already blocked' })
             }
         }
+
+        // Clean up undefined fields so we only update what was sent
         Object.keys(updates).forEach((key) => {
             if (updates[key] === undefined) delete updates[key]
         })
@@ -275,9 +376,11 @@ router.put('/:id/blocked-dates/:blockedId', verifyToken, authorize('owner', 'adm
             updates,
             { new: true, runValidators: true }
         )
+
         if (!editedBlockedDate) {
             return res.status(404).json({ message: 'Blocked date not found' })
         }
+
         res.status(200).json(editedBlockedDate)
     } catch (err) {
         if (err.code === 11000) {
