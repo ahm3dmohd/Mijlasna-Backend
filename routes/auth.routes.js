@@ -12,7 +12,7 @@ router.post("/sign-up", async (req, res) => {
     // Validation
     if (!username || !password || !email || !phone) return res.status(400).json({ message: "All fields are required.", });
     if (password.length < 6) return res.status(400).json({ message: "Password must be more than 6 characters", });
-    if (role === "admin") { return res.status(401).json({ Message: 'You are not allowed to create an admin account.' }) }
+    if (role === "admin") { return res.status(403).json({ message: 'You are not allowed to create an admin account.' }) }
     const user = await User.create({
       username: username,
       email: email,
