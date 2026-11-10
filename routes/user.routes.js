@@ -1,5 +1,5 @@
 const router = require("express").Router()
-
+const bcrypt = require("bcrypt")
 const User = require("../models/User")
 const Venue = require("../models/Venue")
 const Booking = require("../models/Booking")
@@ -43,9 +43,9 @@ router.get("/me", async (req, res) => {
 
 router.put("/me", async (req, res) => {
   try {
-    const { username, email, phone } = req.body
+    const { username, email, phone, password } = req.body
 
-    const user = await User.findByIdAndUpdate(req.user._id, { username, email, phone }, { new: true, runValidators: true })
+    const user = await User.findByIdAndUpdate(req.user._id, { username, email, phone, hashedPassword: await bcrypt.hash(password, 12) }, { new: true, runValidators: true })
     if (!user) return res.status(404).json({ message: "User not found" });
     res.status(200).json(user);
   } catch (err) {
@@ -98,13 +98,9 @@ router.get("/:id", authorize("admin"), validateObjectId, async (req, res) => {
 // PUT /users/:id - admin: edit any user, including their role
 router.put("/:id", authorize("admin"), validateObjectId, async (req, res) => {
   try {
-    const { username, email, phone, role } = req.body;
-    const updates = { username, email, phone, role };
-    Object.keys(updates).forEach((key) => {
-      if (updates[key] === undefined) delete updates[key];
-    });
+    const { username, email, phone, password } = req.body;
 
-    const user = await User.findByIdAndUpdate(req.params.id, updates, { new: true, runValidators: true });
+    const user = await User.findByIdAndUpdate(req.params.id, {username, email, phone, hashedPassword: await bcrypt.hash(password, 12)}, { new: true, runValidators: true });
     if (!user) return res.status(404).json({ message: "User not found" });
     res.status(200).json(user);
   } catch (err) {
