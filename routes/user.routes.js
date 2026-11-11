@@ -28,6 +28,27 @@ async function deleteUserData(userId) {
   await Review.deleteMany({ customer: userId })
 }
 
+// Builds the fields to update from the request body.
+// The password is optional: it is only hashed and changed when one is sent.
+async function buildUserUpdates(body, allowRole) {
+  const { username, email, phone, password, role } = body
+  const updates = { username, email, phone }
+  if (allowRole) updates.role = role
+  if (password) {
+    if (password.length < 6) {
+      const err = new Error("Password must be at least 6 characters")
+      err.status = 400
+      throw err
+    }
+    updates.hashedPassword = await bcrypt.hash(password, 12)
+  }
+  // only change the fields that were sent
+  Object.keys(updates).forEach((key) => {
+    if (updates[key] === undefined) delete updates[key]
+  })
+  return updates
+}
+
 // Get User /users/me (which is my profile)
 
 router.get("/me", async (req, res) => {
@@ -43,13 +64,16 @@ router.get("/me", async (req, res) => {
 
 router.put("/me", async (req, res) => {
   try {
-    const { username, email, phone, password } = req.body
+    const updates = await buildUserUpdates(req.body, false)
 
-    const user = await User.findByIdAndUpdate(req.user._id, { username, email, phone, hashedPassword: await bcrypt.hash(password, 12) }, { new: true, runValidators: true })
+    const user = await User.findByIdAndUpdate(req.user._id, updates, { new: true, runValidators: true })
     if (!user) return res.status(404).json({ message: "User not found" });
     res.status(200).json(user);
   } catch (err) {
     console.log(err);
+    if (err.status === 400) {
+      return res.status(400).json({ message: err.message });
+    }
     if (err.name === "ValidationError") {
       return res.status(400).json({ message: err.message });
     }
@@ -98,13 +122,16 @@ router.get("/:id", authorize("admin"), validateObjectId, async (req, res) => {
 // PUT /users/:id - admin: edit any user, including their role
 router.put("/:id", authorize("admin"), validateObjectId, async (req, res) => {
   try {
-    const { username, email, phone, password } = req.body;
+    const updates = await buildUserUpdates(req.body, true);
 
-    const user = await User.findByIdAndUpdate(req.params.id, {username, email, phone, hashedPassword: await bcrypt.hash(password, 12)}, { new: true, runValidators: true });
+    const user = await User.findByIdAndUpdate(req.params.id, updates, { new: true, runValidators: true });
     if (!user) return res.status(404).json({ message: "User not found" });
     res.status(200).json(user);
   } catch (err) {
     console.log(err);
+    if (err.status === 400) {
+      return res.status(400).json({ message: err.message });
+    }
     if (err.name === "ValidationError") {
       return res.status(400).json({ message: err.message });
     }
@@ -128,4 +155,4 @@ router.delete("/:id", authorize("admin"), validateObjectId, async (req, res) => 
   }
 });
 
-module.exports = router;
+module.exports = router;

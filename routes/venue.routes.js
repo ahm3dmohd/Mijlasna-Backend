@@ -28,6 +28,22 @@ function canManageVenue(venue, user) {
     return venue.owner && venue.owner.equals(user._id)
 }
 
+// Stops everyone except the venue's owner and admins, before any file is uploaded
+async function requireVenueManager(req, res, next) {
+    try {
+        const venue = await Venue.findById(req.params.id)
+        if (!venue) {
+            return res.status(404).json({ message: 'Venue not found' })
+        }
+        if (!canManageVenue(venue, req.user)) {
+            return res.status(403).json({ message: 'You do not have permission to edit this venue.' })
+        }
+        next()
+    } catch (err) {
+        handleError(res, err)
+    }
+}
+
 // Public: anyone can browse venues
 router.get('/', async (req, res) => {
     try {
@@ -79,7 +95,7 @@ router.post('/', verifyToken, authorize('owner', 'admin'), upload.single('image'
 })
 
 // Owner edits their own venue, admin edits any venue
-router.put('/:id', verifyToken, authorize('owner', 'admin'), validateObjectId, async (req, res) => {
+router.put('/:id', verifyToken, authorize('owner', 'admin'), validateObjectId, requireVenueManager, upload.single('image'), async (req, res) => {
     try {
         const getVenueOwner = await Venue.findById(req.params.id)
         if (!getVenueOwner) {
@@ -95,6 +111,9 @@ router.put('/:id', verifyToken, authorize('owner', 'admin'), validateObjectId, a
         Object.keys(updates).forEach((key) => {
             if (updates[key] === undefined) delete updates[key]
         })
+
+        // A new image replaces the old one; no image sent keeps the current one
+        if (req.file) updates.images = req.file.path
 
         const editedVenue = await Venue.findByIdAndUpdate(req.params.id, updates, { new: true, runValidators: true })
         res.status(200).json(editedVenue)
