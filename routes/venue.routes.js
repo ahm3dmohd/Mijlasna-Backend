@@ -7,6 +7,7 @@ const validateObjectId = require('../middleware/validateObjectId')
 const Review = require('../models/Review')
 const Booking = require('../models/Booking')
 const BlockedDate = require('../models/Blocked-Date')
+const upload = require('../middleware/upload');
 
 // Sends the right status code for common Mongoose errors
 function handleError(res, err) {
@@ -52,9 +53,13 @@ router.get('/:id', validateObjectId, async (req, res) => {
 
 // Owners and admin: create a venue
 // An admin can pass "owner" in the body to create a venue for an owner
-router.post('/', verifyToken, authorize('owner', 'admin'), async (req, res) => {
+router.post('/', verifyToken, authorize('owner', 'admin'), upload.single('image'), async (req, res) => {
     try {
         const { name, type, description, address, capacity, images, weekDayPrice, weekendPrice } = req.body
+
+        const imageUrl = req.file ? req.file.path : '';
+
+
         const owner = req.user.role === 'admin' && req.body.owner ? req.body.owner : req.user._id
         const newVenue = await Venue.create({
             name: name,
@@ -62,7 +67,7 @@ router.post('/', verifyToken, authorize('owner', 'admin'), async (req, res) => {
             description: description,
             address: address,
             capacity: capacity,
-            images: images,
+            images: imageUrl,
             weekendPrice: weekendPrice,
             weekDayPrice: weekDayPrice,
             owner: owner
