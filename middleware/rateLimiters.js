@@ -1,9 +1,9 @@
-const rateLimit = require("express-rate-limit");
+const rateLimit = require("express-rate-limit")
 
 const standardLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
+  windowMs: 15 * 60 * 1000,
 
-  max: 100, // Limit each IP to 100 requests per window
+  max: 100,
 
   standardHeaders: true,
 
@@ -12,7 +12,7 @@ const standardLimiter = rateLimit({
   message: {
     message: "Too many requests. Please try again later.",
   },
-});
+})
 
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -23,7 +23,7 @@ const authLimiter = rateLimit({
   message: {
     message: "Too many Login attempts. Please try again later.",
   },
-});
+})
 
 
 

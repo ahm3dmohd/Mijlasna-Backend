@@ -135,8 +135,6 @@ router.put("/:id/status", validateObjectId, async (req, res) => {
 })
 
 
-// Customer, venue owner or admin: edit a booking
-// Send only what you want to change: date, timeOfDay and/or notes
 router.put("/:id", validateObjectId, async (req, res) => {
     try {
         const foundBooking = await Booking.findById(req.params.id).populate("venue")
@@ -145,7 +143,6 @@ router.put("/:id", validateObjectId, async (req, res) => {
             return res.status(404).json({ message: "Booking not found" })
         }
 
-        // The owner is stored on the venue, not on the booking
         const isCustomer = foundBooking.customer.equals(req.user._id)
         const isVenueOwner = foundBooking.venue && foundBooking.venue.owner && foundBooking.venue.owner.equals(req.user._id)
 
@@ -157,7 +154,6 @@ router.put("/:id", validateObjectId, async (req, res) => {
         const updates = {}
         if (notes !== undefined) updates.notes = notes
 
-        // Only re-check availability when the date or time slot changes
         if (date !== undefined || timeOfDay !== undefined) {
             if (!foundBooking.venue) {
                 return res.status(404).json({ message: 'Venue not found' })
@@ -165,7 +161,6 @@ router.put("/:id", validateObjectId, async (req, res) => {
 
             let bookingDate = foundBooking.date
             if (date !== undefined) {
-                // Dates arrive from JSON as strings, so turn them into a Date at midnight
                 const rawDate = new Date(date)
                 if (isNaN(rawDate)) {
                     return res.status(400).json({ message: 'Invalid date' })
@@ -186,13 +181,11 @@ router.put("/:id", validateObjectId, async (req, res) => {
             const newTimeOfDay = timeOfDay !== undefined ? timeOfDay : foundBooking.timeOfDay
             const venueId = foundBooking.venue._id
 
-            // Is the date blocked by the owner?
             const blocked = await BlockedDate.findOne({ venue: venueId, date: bookingDate, timeOfDay: newTimeOfDay })
             if (blocked) {
                 return res.status(409).json({ message: 'This date is not available' })
             }
 
-            // Is the date already booked by someone else? (rejected and cancelled bookings don't count)
             const taken = await Booking.findOne({
                 _id: { $ne: foundBooking._id },
                 venue: venueId,
@@ -204,7 +197,6 @@ router.put("/:id", validateObjectId, async (req, res) => {
                 return res.status(409).json({ message: 'This date is already booked' })
             }
 
-            // Sunday to Wednesday = weekday price, Thursday to Saturday = weekend price
             const day = bookingDate.getUTCDay()
             let price = null
             if (day >= 0 && day < 4) {
@@ -229,7 +221,6 @@ router.put("/:id", validateObjectId, async (req, res) => {
         if (err.name === 'ValidationError') {
             return res.status(400).json({ message: err.message })
         }
-        // Two people booked the same date at the same moment: the database index stops the second one
         if (err.code === 11000) {
             return res.status(409).json({ message: 'This date is already booked' })
         }
@@ -246,7 +237,6 @@ router.delete("/:id", validateObjectId, async (req, res) => {
             return res.status(404).json({ message: "Booking not found" })
         }
 
-        // The owner is stored on the venue, not on the booking
         const isCustomer = foundBooking.customer.equals(req.user._id)
         const isVenueOwner = foundBooking.venue && foundBooking.venue.owner && foundBooking.venue.owner.equals(req.user._id)
 

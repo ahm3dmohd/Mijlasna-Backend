@@ -10,10 +10,10 @@ const blockedDateSchema = new mongoose.Schema({
         type: Date,
         required: true
     },
-    timeOfDay:{
+    timeOfDay: {
         type: String,
-        required:true,
-        enum: ['Morning 7 to 12','Evening 7 to 12']
+        required: true,
+        enum: ['Morning 7 to 12', 'Evening 7 to 12']
     },
     reasonCategory: {
         type: String,
@@ -28,7 +28,6 @@ const blockedDateSchema = new mongoose.Schema({
 
 }, { timestamps: true })
 
-// The same venue, date and time slot can only be blocked once
 blockedDateSchema.index({ venue: 1, date: 1, timeOfDay: 1 }, { unique: true })
 
 const BlockedDate = mongoose.model('BlockedDate', blockedDateSchema)
