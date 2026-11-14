@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+const mongoose = require("mongoose")
 
 const userSchema = new mongoose.Schema(
   {
@@ -20,7 +20,7 @@ const userSchema = new mongoose.Schema(
       unique: true,
       trim: true,
       min: 10000000,
-      max: 69999999
+      max: 79999999
     },
     hashedPassword: {
       type: String,
@@ -33,14 +33,14 @@ const userSchema = new mongoose.Schema(
     }
   },
   { timestamps: true },
-);
+)
 
 userSchema.set("toJSON", {
   transform: (document, returnedObject) => {
-    delete returnedObject.hashedPassword;
+    delete returnedObject.hashedPassword
   },
-});
+})
 
-const User = mongoose.model("User", userSchema);
+const User = mongoose.model("User", userSchema)
 
-module.exports = User;
+module.exports = User

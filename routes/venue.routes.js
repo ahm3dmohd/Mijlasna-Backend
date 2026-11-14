@@ -7,9 +7,8 @@ const validateObjectId = require('../middleware/validateObjectId')
 const Review = require('../models/Review')
 const Booking = require('../models/Booking')
 const BlockedDate = require('../models/Blocked-Date')
-const upload = require('../middleware/upload');
+const upload = require('../middleware/upload')
 
-// Sends the right status code for common Mongoose errors
 function handleError(res, err) {
     console.log(err)
     if (err.name === 'ValidationError') {
@@ -22,13 +21,11 @@ function handleError(res, err) {
     return res.status(500).json({ message: 'Internal Server Error' })
 }
 
-// Admin can manage every venue, an owner only their own
 function canManageVenue(venue, user) {
     if (user.role === 'admin') return true
     return venue.owner && venue.owner.equals(user._id)
 }
 
-// Stops everyone except the venue's owner and admins, before any file is uploaded
 async function requireVenueManager(req, res, next) {
     try {
         const venue = await Venue.findById(req.params.id)
@@ -44,7 +41,6 @@ async function requireVenueManager(req, res, next) {
     }
 }
 
-// Public: anyone can browse venues
 router.get('/', async (req, res) => {
     try {
         const allVenues = await Venue.find()
@@ -54,7 +50,6 @@ router.get('/', async (req, res) => {
     }
 })
 
-// Public: anyone can view one venue
 router.get('/:id', validateObjectId, async (req, res) => {
     try {
         const oneVenue = await Venue.findById(req.params.id)
@@ -67,13 +62,11 @@ router.get('/:id', validateObjectId, async (req, res) => {
     }
 })
 
-// Owners and admin: create a venue
-// An admin can pass "owner" in the body to create a venue for an owner
 router.post('/', verifyToken, authorize('owner', 'admin'), upload.single('image'), async (req, res) => {
     try {
-        const { name, type, description, address, capacity, images, weekDayPrice, weekendPrice } = req.body
+        const { name, type, description, address, capacity, weekDayPrice, weekendPrice } = req.body
 
-        const imageUrl = req.file ? req.file.path : '';
+        const imageUrl = req.file ? req.file.path : ''
 
 
         const owner = req.user.role === 'admin' && req.body.owner ? req.body.owner : req.user._id
@@ -94,7 +87,6 @@ router.post('/', verifyToken, authorize('owner', 'admin'), upload.single('image'
     }
 })
 
-// Owner edits their own venue, admin edits any venue
 router.put('/:id', verifyToken, authorize('owner', 'admin'), validateObjectId, requireVenueManager, upload.single('image'), async (req, res) => {
     try {
         const getVenueOwner = await Venue.findById(req.params.id)
@@ -105,14 +97,12 @@ router.put('/:id', verifyToken, authorize('owner', 'admin'), validateObjectId, r
             return res.status(403).json({ message: 'You do not have permission to edit this venue.' })
         }
 
-        // Only change the fields that were sent, so images and owner are never wiped
         const { name, type, description, address, capacity, images, weekDayPrice, weekendPrice } = req.body
         const updates = { name, type, description, address, capacity, images, weekDayPrice, weekendPrice }
         Object.keys(updates).forEach((key) => {
             if (updates[key] === undefined) delete updates[key]
         })
 
-        // A new image replaces the old one; no image sent keeps the current one
         if (req.file) updates.images = req.file.path
 
         const editedVenue = await Venue.findByIdAndUpdate(req.params.id, updates, { new: true, runValidators: true })
@@ -122,7 +112,6 @@ router.put('/:id', verifyToken, authorize('owner', 'admin'), validateObjectId, r
     }
 })
 
-// Owner deletes their own venue, admin deletes any venue
 router.delete('/:id', verifyToken, authorize('owner', 'admin'), validateObjectId, async (req, res) => {
     try {
         const getVenueOwner = await Venue.findById(req.params.id)
@@ -135,7 +124,6 @@ router.delete('/:id', verifyToken, authorize('owner', 'admin'), validateObjectId
         }
         const deletedVenue = await Venue.findByIdAndDelete(req.params.id)
 
-        // Remove everything that belonged to this venue so nothing is left pointing at it
         await Booking.deleteMany({ venue: req.params.id })
         await BlockedDate.deleteMany({ venue: req.params.id })
         await Review.deleteMany({ venue: req.params.id })
@@ -146,19 +134,17 @@ router.delete('/:id', verifyToken, authorize('owner', 'admin'), validateObjectId
     }
 })
 
-// Logged in: book a venue on a date
 router.post('/:id/booking', verifyToken, validateObjectId, async (req, res) => {
     try {
         const { date, timeOfDay, notes } = req.body
 
 
-        // Dates arrive from JSON as strings, so turn them into a Date at midnight
-        const rawDate = new Date(date);
+        const rawDate = new Date(date)
         const bookingDate = new Date(Date.UTC(
             rawDate.getUTCFullYear(),
             rawDate.getUTCMonth(),
             rawDate.getUTCDate()
-        ));
+        ))
 
         if (isNaN(bookingDate)) {
             return res.status(400).json({ message: 'Invalid date' })
@@ -176,13 +162,11 @@ router.post('/:id/booking', verifyToken, validateObjectId, async (req, res) => {
             return res.status(404).json({ message: 'Venue not found' })
         }
 
-        // Is the date blocked by the owner?
         const blocked = await BlockedDate.findOne({ venue: req.params.id, date: bookingDate, timeOfDay: timeOfDay })
         if (blocked) {
             return res.status(409).json({ message: 'This date is not available' })
         }
 
-        // Is the date already booked? (rejected and cancelled bookings don't count)
         const taken = await Booking.findOne({
             venue: req.params.id,
             date: bookingDate,
@@ -193,7 +177,6 @@ router.post('/:id/booking', verifyToken, validateObjectId, async (req, res) => {
             return res.status(409).json({ message: 'This date is already booked' })
         }
 
-        // Sunday to Wednesday = weekday price, Thursday to Saturday = weekend price
         const day = bookingDate.getUTCDay()
         let price = null
         if (day >= 0 && day < 4) {
@@ -213,7 +196,6 @@ router.post('/:id/booking', verifyToken, validateObjectId, async (req, res) => {
 
         res.status(201).json(newBooking)
     } catch (err) {
-        // Two people booked the same date at the same moment: the database index stops the second one
         if (err.code === 11000) {
             return res.status(409).json({ message: 'This date is already booked' })
         }
@@ -221,7 +203,6 @@ router.post('/:id/booking', verifyToken, validateObjectId, async (req, res) => {
     }
 })
 
-// Public: reviews for a venue
 router.get('/:id/reviews', validateObjectId, async (req, res) => {
     try {
         const getReviews = await Review.find({ venue: req.params.id })
@@ -231,7 +212,6 @@ router.get('/:id/reviews', validateObjectId, async (req, res) => {
     }
 })
 
-// Logged in: write a review for a venue
 router.post('/:id/reviews', verifyToken, validateObjectId, async (req, res) => {
     try {
         const venue = await Venue.findById(req.params.id)
@@ -252,7 +232,6 @@ router.post('/:id/reviews', verifyToken, validateObjectId, async (req, res) => {
     }
 })
 
-// The review's author, the venue owner or an admin: delete a review
 router.delete('/:id/reviews/:rid', verifyToken, validateObjectId, async (req, res) => {
     try {
         if (!mongoose.Types.ObjectId.isValid(req.params.rid)) {
@@ -281,9 +260,6 @@ router.delete('/:id/reviews/:rid', verifyToken, validateObjectId, async (req, re
     }
 })
 
-// ---------- Blocked dates ----------
-
-// Turns a date string into a Date at midnight (UTC), or null if invalid
 function toDay(date) {
     const day = new Date(date)
     if (!date || isNaN(day)) return null
@@ -291,7 +267,6 @@ function toDay(date) {
     return day
 }
 
-// Public: blocked dates for a venue
 router.get('/:id/blocked-dates', validateObjectId, async (req, res) => {
     try {
         const blockedDates = await BlockedDate.find({ venue: req.params.id }).sort({ date: 1 })
@@ -301,7 +276,6 @@ router.get('/:id/blocked-dates', validateObjectId, async (req, res) => {
     }
 })
 
-// Venue owner or admin: block a date
 router.post('/:id/blocked-dates', verifyToken, authorize('owner', 'admin'), validateObjectId, async (req, res) => {
     try {
         const venue = await Venue.findById(req.params.id)
@@ -318,12 +292,12 @@ router.post('/:id/blocked-dates', verifyToken, authorize('owner', 'admin'), vali
             return res.status(400).json({ message: 'Invalid date' })
         }
 
-        const rawDate = new Date(req.body.date);
+        const rawDate = new Date(req.body.date)
         const blockedDate = new Date(Date.UTC(
             rawDate.getUTCFullYear(),
             rawDate.getUTCMonth(),
             rawDate.getUTCDate()
-        ));
+        ))
 
         const today = new Date()
         today.setUTCHours(0, 0, 0, 0)
@@ -356,7 +330,6 @@ router.post('/:id/blocked-dates', verifyToken, authorize('owner', 'admin'), vali
     }
 })
 
-// Venue owner or admin: edit a blocked date
 router.put('/:id/blocked-dates/:blockedId', verifyToken, authorize('owner', 'admin'), validateObjectId, async (req, res) => {
     try {
         if (!mongoose.Types.ObjectId.isValid(req.params.blockedId)) {
@@ -375,7 +348,6 @@ router.put('/:id/blocked-dates/:blockedId', verifyToken, authorize('owner', 'adm
         const { date, timeOfDay, reasonCategory, reason } = req.body
         const updates = { date, timeOfDay, reasonCategory, reason }
 
-        // If a date is provided, normalize it and check if it's in the past
         if (date !== undefined) {
             const rawDate = new Date(date)
             if (isNaN(rawDate.getTime())) {
@@ -398,9 +370,7 @@ router.put('/:id/blocked-dates/:blockedId', verifyToken, authorize('owner', 'adm
             updates.date = normalizedDate
         }
 
-        // If either date or timeOfDay is being updated, check for conflicts (excluding current record)
         if (date !== undefined || timeOfDay !== undefined) {
-            // Find the existing record to fallback if only one of them is provided in req.body
             const existingBlock = await BlockedDate.findById(req.params.blockedId)
             if (!existingBlock) {
                 return res.status(404).json({ message: 'Blocked date not found' })
@@ -410,7 +380,7 @@ router.put('/:id/blocked-dates/:blockedId', verifyToken, authorize('owner', 'adm
             const targetTime = timeOfDay !== undefined ? timeOfDay : existingBlock.timeOfDay
 
             const alreadyBlocked = await BlockedDate.findOne({
-                _id: { $ne: req.params.blockedId }, // EXCLUDE current record so it doesn't conflict with itself
+                _id: { $ne: req.params.blockedId },
                 venue: req.params.id,
                 date: targetDate,
                 timeOfDay: targetTime,
@@ -421,7 +391,6 @@ router.put('/:id/blocked-dates/:blockedId', verifyToken, authorize('owner', 'adm
             }
         }
 
-        // Clean up undefined fields so we only update what was sent
         Object.keys(updates).forEach((key) => {
             if (updates[key] === undefined) delete updates[key]
         })
@@ -445,7 +414,6 @@ router.put('/:id/blocked-dates/:blockedId', verifyToken, authorize('owner', 'adm
     }
 })
 
-// Venue owner or admin: unblock a date
 router.delete('/:id/blocked-dates/:blockedId', verifyToken, authorize('owner', 'admin'), validateObjectId, async (req, res) => {
     try {
         if (!mongoose.Types.ObjectId.isValid(req.params.blockedId)) {
