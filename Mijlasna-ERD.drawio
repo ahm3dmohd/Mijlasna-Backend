@@ -1,0 +1,381 @@
+<mxfile host="Electron">
+  <diagram id="mijlasna-erd" name="Mijlasna ERD">
+    <mxGraphModel dx="1414" dy="841" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1250" pageHeight="800" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="User" parent="1" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;fillColor=#262626;strokeColor=#bdbdbd;fontColor=#ffffff;fontSize=13;" value="USER" vertex="1">
+          <mxGeometry height="186" width="260" x="40" y="60" as="geometry" />
+        </mxCell>
+        <mxCell id="User__id_t" parent="User" style="fillColor=#1e1e1e;strokeColor=#bdbdbd;fontColor=#e8e8e8;align=left;spacingLeft=6;fontSize=12;whiteSpace=wrap;" value="ObjectId" vertex="1">
+          <mxGeometry height="26" width="78" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="User__id" parent="User" style="fillColor=#1e1e1e;strokeColor=#bdbdbd;fontColor=#e8e8e8;align=left;spacingLeft=6;fontSize=12;whiteSpace=wrap;" value="_id" vertex="1">
+          <mxGeometry height="26" width="132" x="78" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="User__id_k" parent="User" style="fillColor=#1e1e1e;strokeColor=#bdbdbd;fontColor=#e8e8e8;align=center;spacingLeft=6;fontSize=12;whiteSpace=wrap;fontStyle=1;" value="PK" vertex="1">
+          <mxGeometry height="26" width="50" x="210" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="User_username_t" parent="User" style="fillColor=#1e1e1e;strokeColor=#bdbdbd;fontColor=#e8e8e8;align=left;spacingLeft=6;fontSize=12;whiteSpace=wrap;" value="string" vertex="1">
+          <mxGeometry height="26" width="78" y="56" as="geometry" />
+        </mxCell>
+        <mxCell id="User_username" parent="User" style="fillColor=#1e1e1e;strokeColor=#bdbdbd;fontColor=#e8e8e8;align=left;spacingLeft=6;fontSize=12;whiteSpace=wrap;" value="username" vertex="1">
+          <mxGeometry height="26" width="132" x="78" y="56" as="geometry" />
+        </mxCell>
+        <mxCell id="User_username_k" parent="User" style="fillColor=#1e1e1e;strokeColor=#bdbdbd;fontColor=#e8e8e8;align=center;spacingLeft=6;fontSize=12;whiteSpace=wrap;" value="" vertex="1">
+          <mxGeometry height="26" width="50" x="210" y="56" as="geometry" />
+        </mxCell>
+        <mxCell id="User_email_t" parent="User" style="fillColor=#1e1e1e;strokeColor=#bdbdbd;fontColor=#e8e8e8;align=left;spacingLeft=6;fontSize=12;whiteSpace=wrap;" value="string" vertex="1">
+          <mxGeometry height="26" width="78" y="82" as="geometry" />
+        </mxCell>
+        <mxCell id="User_email" parent="User" style="fillColor=#1e1e1e;strokeColor=#bdbdbd;fontColor=#e8e8e8;align=left;spacingLeft=6;fontSize=12;whiteSpace=wrap;" value="email" vertex="1">
+          <mxGeometry height="26" width="132" x="78" y="82" as="geometry" />
+        </mxCell>
+        <mxCell id="User_email_k" parent="User" style="fillColor=#1e1e1e;strokeColor=#bdbdbd;fontColor=#e8e8e8;align=center;spacingLeft=6;fontSize=12;whiteSpace=wrap;" value="" vertex="1">
+          <mxGeometry height="26" width="50" x="210" y="82" as="geometry" />
+        </mxCell>
+        <mxCell id="User_phone_t" parent="User" style="fillColor=#1e1e1e;strokeColor=#bdbdbd;fontColor=#e8e8e8;align=left;spacingLeft=6;fontSize=12;whiteSpace=wrap;" value="number" vertex="1">
+          <mxGeometry height="26" width="78" y="108" as="geometry" />
+        </mxCell>
+        <mxCell id="User_phone" parent="User" style="fillColor=#1e1e1e;strokeColor=#bdbdbd;fontColor=#e8e8e8;align=left;spacingLeft=6;fontSize=12;whiteSpace=wrap;" value="phone" vertex="1">
+          <mxGeometry height="26" width="132" x="78" y="108" as="geometry" />
+        </mxCell>
+        <mxCell id="User_phone_k" parent="User" style="fillColor=#1e1e1e;strokeColor=#bdbdbd;fontColor=#e8e8e8;align=center;spacingLeft=6;fontSize=12;whiteSpace=wrap;" value="" vertex="1">
+          <mxGeometry height="26" width="50" x="210" y="108" as="geometry" />
+        </mxCell>
+        <mxCell id="User_hashedPassword_t" parent="User" style="fillColor=#1e1e1e;strokeColor=#bdbdbd;fontColor=#e8e8e8;align=left;spacingLeft=6;fontSize=12;whiteSpace=wrap;" value="string" vertex="1">
+          <mxGeometry height="26" width="78" y="134" as="geometry" />
+        </mxCell>
+        <mxCell id="User_hashedPassword" parent="User" style="fillColor=#1e1e1e;strokeColor=#bdbdbd;fontColor=#e8e8e8;align=left;spacingLeft=6;fontSize=12;whiteSpace=wrap;" value="hashedPassword" vertex="1">
+          <mxGeometry height="26" width="132" x="78" y="134" as="geometry" />
+        </mxCell>
+        <mxCell id="User_hashedPassword_k" parent="User" style="fillColor=#1e1e1e;strokeColor=#bdbdbd;fontColor=#e8e8e8;align=center;spacingLeft=6;fontSize=12;whiteSpace=wrap;" value="" vertex="1">
+          <mxGeometry height="26" width="50" x="210" y="134" as="geometry" />
+        </mxCell>
+        <mxCell id="User_role_t" parent="User" style="fillColor=#1e1e1e;strokeColor=#bdbdbd;fontColor=#e8e8e8;align=left;spacingLeft=6;fontSize=12;whiteSpace=wrap;" value="string" vertex="1">
+          <mxGeometry height="26" width="78" y="160" as="geometry" />
+        </mxCell>
+        <mxCell id="User_role" parent="User" style="fillColor=#1e1e1e;strokeColor=#bdbdbd;fontColor=#e8e8e8;align=left;spacingLeft=6;fontSize=12;whiteSpace=wrap;" value="role" vertex="1">
+          <mxGeometry height="26" width="132" x="78" y="160" as="geometry" />
+        </mxCell>
+        <mxCell id="User_role_k" parent="User" style="fillColor=#1e1e1e;strokeColor=#bdbdbd;fontColor=#e8e8e8;align=center;spacingLeft=6;fontSize=12;whiteSpace=wrap;" value="" vertex="1">
+          <mxGeometry height="26" width="50" x="210" y="160" as="geometry" />
+        </mxCell>
+        <mxCell id="Booking" parent="1" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;fillColor=#262626;strokeColor=#bdbdbd;fontColor=#ffffff;fontSize=13;" value="BOOKING" vertex="1">
+          <mxGeometry height="290" width="260" x="40" y="340" as="geometry" />
+        </mxCell>
+        <mxCell id="Booking__id_t" parent="Booking" style="fillColor=#1e1e1e;strokeColor=#bdbdbd;fontColor=#e8e8e8;align=left;spacingLeft=6;fontSize=12;whiteSpace=wrap;" value="ObjectId" vertex="1">
+          <mxGeometry height="26" width="78" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="Booking__id" parent="Booking" style="fillColor=#1e1e1e;strokeColor=#bdbdbd;fontColor=#e8e8e8;align=left;spacingLeft=6;fontSize=12;whiteSpace=wrap;" value="_id" vertex="1">
+          <mxGeometry height="26" width="132" x="78" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="Booking__id_k" parent="Booking" style="fillColor=#1e1e1e;strokeColor=#bdbdbd;fontColor=#e8e8e8;align=center;spacingLeft=6;fontSize=12;whiteSpace=wrap;fontStyle=1;" value="PK" vertex="1">
+          <mxGeometry height="26" width="50" x="210" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="Booking_venue_t" parent="Booking" style="fillColor=#1e1e1e;strokeColor=#bdbdbd;fontColor=#e8e8e8;align=left;spacingLeft=6;fontSize=12;whiteSpace=wrap;" value="ObjectId" vertex="1">
+          <mxGeometry height="26" width="78" y="56" as="geometry" />
+        </mxCell>
+        <mxCell id="Booking_venue" parent="Booking" style="fillColor=#1e1e1e;strokeColor=#bdbdbd;fontColor=#e8e8e8;align=left;spacingLeft=6;fontSize=12;whiteSpace=wrap;" value="venue" vertex="1">
+          <mxGeometry height="26" width="132" x="78" y="56" as="geometry" />
+        </mxCell>
+        <mxCell id="Booking_venue_k" parent="Booking" style="fillColor=#1e1e1e;strokeColor=#bdbdbd;fontColor=#e8e8e8;align=center;spacingLeft=6;fontSize=12;whiteSpace=wrap;fontStyle=1;" value="FK" vertex="1">
+          <mxGeometry height="26" width="50" x="210" y="56" as="geometry" />
+        </mxCell>
+        <mxCell id="Booking_customer_t" parent="Booking" style="fillColor=#1e1e1e;strokeColor=#bdbdbd;fontColor=#e8e8e8;align=left;spacingLeft=6;fontSize=12;whiteSpace=wrap;" value="ObjectId" vertex="1">
+          <mxGeometry height="26" width="78" y="82" as="geometry" />
+        </mxCell>
+        <mxCell id="Booking_customer" parent="Booking" style="fillColor=#1e1e1e;strokeColor=#bdbdbd;fontColor=#e8e8e8;align=left;spacingLeft=6;fontSize=12;whiteSpace=wrap;" value="customer" vertex="1">
+          <mxGeometry height="26" width="132" x="78" y="82" as="geometry" />
+        </mxCell>
+        <mxCell id="Booking_customer_k" parent="Booking" style="fillColor=#1e1e1e;strokeColor=#bdbdbd;fontColor=#e8e8e8;align=center;spacingLeft=6;fontSize=12;whiteSpace=wrap;fontStyle=1;" value="FK" vertex="1">
+          <mxGeometry height="26" width="50" x="210" y="82" as="geometry" />
+        </mxCell>
+        <mxCell id="Booking_date_t" parent="Booking" style="fillColor=#1e1e1e;strokeColor=#bdbdbd;fontColor=#e8e8e8;align=left;spacingLeft=6;fontSize=12;whiteSpace=wrap;" value="date" vertex="1">
+          <mxGeometry height="26" width="78" y="108" as="geometry" />
+        </mxCell>
+        <mxCell id="Booking_date" parent="Booking" style="fillColor=#1e1e1e;strokeColor=#bdbdbd;fontColor=#e8e8e8;align=left;spacingLeft=6;fontSize=12;whiteSpace=wrap;" value="date" vertex="1">
+          <mxGeometry height="26" width="132" x="78" y="108" as="geometry" />
+        </mxCell>
+        <mxCell id="Booking_date_k" parent="Booking" style="fillColor=#1e1e1e;strokeColor=#bdbdbd;fontColor=#e8e8e8;align=center;spacingLeft=6;fontSize=12;whiteSpace=wrap;" value="" vertex="1">
+          <mxGeometry height="26" width="50" x="210" y="108" as="geometry" />
+        </mxCell>
+        <mxCell id="Booking_timeOfDay_t" parent="Booking" style="fillColor=#1e1e1e;strokeColor=#bdbdbd;fontColor=#e8e8e8;align=left;spacingLeft=6;fontSize=12;whiteSpace=wrap;" value="string" vertex="1">
+          <mxGeometry height="26" width="78" y="134" as="geometry" />
+        </mxCell>
+        <mxCell id="Booking_timeOfDay" parent="Booking" style="fillColor=#1e1e1e;strokeColor=#bdbdbd;fontColor=#e8e8e8;align=left;spacingLeft=6;fontSize=12;whiteSpace=wrap;" value="timeOfDay" vertex="1">
+          <mxGeometry height="26" width="132" x="78" y="134" as="geometry" />
+        </mxCell>
+        <mxCell id="Booking_timeOfDay_k" parent="Booking" style="fillColor=#1e1e1e;strokeColor=#bdbdbd;fontColor=#e8e8e8;align=center;spacingLeft=6;fontSize=12;whiteSpace=wrap;" value="" vertex="1">
+          <mxGeometry height="26" width="50" x="210" y="134" as="geometry" />
+        </mxCell>
+        <mxCell id="Booking_totalPrice_t" parent="Booking" style="fillColor=#1e1e1e;strokeColor=#bdbdbd;fontColor=#e8e8e8;align=left;spacingLeft=6;fontSize=12;whiteSpace=wrap;" value="number" vertex="1">
+          <mxGeometry height="26" width="78" y="160" as="geometry" />
+        </mxCell>
+        <mxCell id="Booking_totalPrice" parent="Booking" style="fillColor=#1e1e1e;strokeColor=#bdbdbd;fontColor=#e8e8e8;align=left;spacingLeft=6;fontSize=12;whiteSpace=wrap;" value="totalPrice" vertex="1">
+          <mxGeometry height="26" width="132" x="78" y="160" as="geometry" />
+        </mxCell>
+        <mxCell id="Booking_totalPrice_k" parent="Booking" style="fillColor=#1e1e1e;strokeColor=#bdbdbd;fontColor=#e8e8e8;align=center;spacingLeft=6;fontSize=12;whiteSpace=wrap;" value="" vertex="1">
+          <mxGeometry height="26" width="50" x="210" y="160" as="geometry" />
+        </mxCell>
+        <mxCell id="Booking_deposit_t" parent="Booking" style="fillColor=#1e1e1e;strokeColor=#bdbdbd;fontColor=#e8e8e8;align=left;spacingLeft=6;fontSize=12;whiteSpace=wrap;" value="Boolean" vertex="1">
+          <mxGeometry height="26" width="78" y="186" as="geometry" />
+        </mxCell>
+        <mxCell id="Booking_deposit" parent="Booking" style="fillColor=#1e1e1e;strokeColor=#bdbdbd;fontColor=#e8e8e8;align=left;spacingLeft=6;fontSize=12;whiteSpace=wrap;" value="deposit" vertex="1">
+          <mxGeometry height="26" width="132" x="78" y="186" as="geometry" />
+        </mxCell>
+        <mxCell id="Booking_deposit_k" parent="Booking" style="fillColor=#1e1e1e;strokeColor=#bdbdbd;fontColor=#e8e8e8;align=center;spacingLeft=6;fontSize=12;whiteSpace=wrap;" value="" vertex="1">
+          <mxGeometry height="26" width="50" x="210" y="186" as="geometry" />
+        </mxCell>
+        <mxCell id="Booking_status_t" parent="Booking" style="fillColor=#1e1e1e;strokeColor=#bdbdbd;fontColor=#e8e8e8;align=left;spacingLeft=6;fontSize=12;whiteSpace=wrap;" value="string" vertex="1">
+          <mxGeometry height="26" width="78" y="212" as="geometry" />
+        </mxCell>
+        <mxCell id="Booking_status" parent="Booking" style="fillColor=#1e1e1e;strokeColor=#bdbdbd;fontColor=#e8e8e8;align=left;spacingLeft=6;fontSize=12;whiteSpace=wrap;" value="status" vertex="1">
+          <mxGeometry height="26" width="132" x="78" y="212" as="geometry" />
+        </mxCell>
+        <mxCell id="Booking_status_k" parent="Booking" style="fillColor=#1e1e1e;strokeColor=#bdbdbd;fontColor=#e8e8e8;align=center;spacingLeft=6;fontSize=12;whiteSpace=wrap;" value="" vertex="1">
+          <mxGeometry height="26" width="50" x="210" y="212" as="geometry" />
+        </mxCell>
+        <mxCell id="Booking_paymentStatus_t" parent="Booking" style="fillColor=#1e1e1e;strokeColor=#bdbdbd;fontColor=#e8e8e8;align=left;spacingLeft=6;fontSize=12;whiteSpace=wrap;" value="Boolean" vertex="1">
+          <mxGeometry height="26" width="78" y="238" as="geometry" />
+        </mxCell>
+        <mxCell id="Booking_paymentStatus" parent="Booking" style="fillColor=#1e1e1e;strokeColor=#bdbdbd;fontColor=#e8e8e8;align=left;spacingLeft=6;fontSize=12;whiteSpace=wrap;" value="paymentStatus" vertex="1">
+          <mxGeometry height="26" width="132" x="78" y="238" as="geometry" />
+        </mxCell>
+        <mxCell id="Booking_paymentStatus_k" parent="Booking" style="fillColor=#1e1e1e;strokeColor=#bdbdbd;fontColor=#e8e8e8;align=center;spacingLeft=6;fontSize=12;whiteSpace=wrap;" value="" vertex="1">
+          <mxGeometry height="26" width="50" x="210" y="238" as="geometry" />
+        </mxCell>
+        <mxCell id="Booking_notes_t" parent="Booking" style="fillColor=#1e1e1e;strokeColor=#bdbdbd;fontColor=#e8e8e8;align=left;spacingLeft=6;fontSize=12;whiteSpace=wrap;" value="string" vertex="1">
+          <mxGeometry height="26" width="78" y="264" as="geometry" />
+        </mxCell>
+        <mxCell id="Booking_notes" parent="Booking" style="fillColor=#1e1e1e;strokeColor=#bdbdbd;fontColor=#e8e8e8;align=left;spacingLeft=6;fontSize=12;whiteSpace=wrap;" value="notes" vertex="1">
+          <mxGeometry height="26" width="132" x="78" y="264" as="geometry" />
+        </mxCell>
+        <mxCell id="Booking_notes_k" parent="Booking" style="fillColor=#1e1e1e;strokeColor=#bdbdbd;fontColor=#e8e8e8;align=center;spacingLeft=6;fontSize=12;whiteSpace=wrap;" value="" vertex="1">
+          <mxGeometry height="26" width="50" x="210" y="264" as="geometry" />
+        </mxCell>
+        <mxCell id="Venue" parent="1" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;fillColor=#262626;strokeColor=#bdbdbd;fontColor=#ffffff;fontSize=13;" value="VENUE" vertex="1">
+          <mxGeometry height="290" width="260" x="440" y="60" as="geometry" />
+        </mxCell>
+        <mxCell id="Venue__id_t" parent="Venue" style="fillColor=#1e1e1e;strokeColor=#bdbdbd;fontColor=#e8e8e8;align=left;spacingLeft=6;fontSize=12;whiteSpace=wrap;" value="ObjectId" vertex="1">
+          <mxGeometry height="26" width="78" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="Venue__id" parent="Venue" style="fillColor=#1e1e1e;strokeColor=#bdbdbd;fontColor=#e8e8e8;align=left;spacingLeft=6;fontSize=12;whiteSpace=wrap;" value="_id" vertex="1">
+          <mxGeometry height="26" width="132" x="78" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="Venue__id_k" parent="Venue" style="fillColor=#1e1e1e;strokeColor=#bdbdbd;fontColor=#e8e8e8;align=center;spacingLeft=6;fontSize=12;whiteSpace=wrap;fontStyle=1;" value="PK" vertex="1">
+          <mxGeometry height="26" width="50" x="210" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="Venue_owner_t" parent="Venue" style="fillColor=#1e1e1e;strokeColor=#bdbdbd;fontColor=#e8e8e8;align=left;spacingLeft=6;fontSize=12;whiteSpace=wrap;" value="ObjectId" vertex="1">
+          <mxGeometry height="26" width="78" y="56" as="geometry" />
+        </mxCell>
+        <mxCell id="Venue_owner" parent="Venue" style="fillColor=#1e1e1e;strokeColor=#bdbdbd;fontColor=#e8e8e8;align=left;spacingLeft=6;fontSize=12;whiteSpace=wrap;" value="owner" vertex="1">
+          <mxGeometry height="26" width="132" x="78" y="56" as="geometry" />
+        </mxCell>
+        <mxCell id="Venue_owner_k" parent="Venue" style="fillColor=#1e1e1e;strokeColor=#bdbdbd;fontColor=#e8e8e8;align=center;spacingLeft=6;fontSize=12;whiteSpace=wrap;fontStyle=1;" value="FK" vertex="1">
+          <mxGeometry height="26" width="50" x="210" y="56" as="geometry" />
+        </mxCell>
+        <mxCell id="Venue_name_t" parent="Venue" style="fillColor=#1e1e1e;strokeColor=#bdbdbd;fontColor=#e8e8e8;align=left;spacingLeft=6;fontSize=12;whiteSpace=wrap;" value="string" vertex="1">
+          <mxGeometry height="26" width="78" y="82" as="geometry" />
+        </mxCell>
+        <mxCell id="Venue_name" parent="Venue" style="fillColor=#1e1e1e;strokeColor=#bdbdbd;fontColor=#e8e8e8;align=left;spacingLeft=6;fontSize=12;whiteSpace=wrap;" value="name" vertex="1">
+          <mxGeometry height="26" width="132" x="78" y="82" as="geometry" />
+        </mxCell>
+        <mxCell id="Venue_name_k" parent="Venue" style="fillColor=#1e1e1e;strokeColor=#bdbdbd;fontColor=#e8e8e8;align=center;spacingLeft=6;fontSize=12;whiteSpace=wrap;" value="" vertex="1">
+          <mxGeometry height="26" width="50" x="210" y="82" as="geometry" />
+        </mxCell>
+        <mxCell id="Venue_type_t" parent="Venue" style="fillColor=#1e1e1e;strokeColor=#bdbdbd;fontColor=#e8e8e8;align=left;spacingLeft=6;fontSize=12;whiteSpace=wrap;" value="string" vertex="1">
+          <mxGeometry height="26" width="78" y="108" as="geometry" />
+        </mxCell>
+        <mxCell id="Venue_type" parent="Venue" style="fillColor=#1e1e1e;strokeColor=#bdbdbd;fontColor=#e8e8e8;align=left;spacingLeft=6;fontSize=12;whiteSpace=wrap;" value="type" vertex="1">
+          <mxGeometry height="26" width="132" x="78" y="108" as="geometry" />
+        </mxCell>
+        <mxCell id="Venue_type_k" parent="Venue" style="fillColor=#1e1e1e;strokeColor=#bdbdbd;fontColor=#e8e8e8;align=center;spacingLeft=6;fontSize=12;whiteSpace=wrap;" value="" vertex="1">
+          <mxGeometry height="26" width="50" x="210" y="108" as="geometry" />
+        </mxCell>
+        <mxCell id="Venue_description_t" parent="Venue" style="fillColor=#1e1e1e;strokeColor=#bdbdbd;fontColor=#e8e8e8;align=left;spacingLeft=6;fontSize=12;whiteSpace=wrap;" value="string" vertex="1">
+          <mxGeometry height="26" width="78" y="134" as="geometry" />
+        </mxCell>
+        <mxCell id="Venue_description" parent="Venue" style="fillColor=#1e1e1e;strokeColor=#bdbdbd;fontColor=#e8e8e8;align=left;spacingLeft=6;fontSize=12;whiteSpace=wrap;" value="description" vertex="1">
+          <mxGeometry height="26" width="132" x="78" y="134" as="geometry" />
+        </mxCell>
+        <mxCell id="Venue_description_k" parent="Venue" style="fillColor=#1e1e1e;strokeColor=#bdbdbd;fontColor=#e8e8e8;align=center;spacingLeft=6;fontSize=12;whiteSpace=wrap;" value="" vertex="1">
+          <mxGeometry height="26" width="50" x="210" y="134" as="geometry" />
+        </mxCell>
+        <mxCell id="Venue_address_t" parent="Venue" style="fillColor=#1e1e1e;strokeColor=#bdbdbd;fontColor=#e8e8e8;align=left;spacingLeft=6;fontSize=12;whiteSpace=wrap;" value="string" vertex="1">
+          <mxGeometry height="26" width="78" y="160" as="geometry" />
+        </mxCell>
+        <mxCell id="Venue_address" parent="Venue" style="fillColor=#1e1e1e;strokeColor=#bdbdbd;fontColor=#e8e8e8;align=left;spacingLeft=6;fontSize=12;whiteSpace=wrap;" value="address" vertex="1">
+          <mxGeometry height="26" width="132" x="78" y="160" as="geometry" />
+        </mxCell>
+        <mxCell id="Venue_address_k" parent="Venue" style="fillColor=#1e1e1e;strokeColor=#bdbdbd;fontColor=#e8e8e8;align=center;spacingLeft=6;fontSize=12;whiteSpace=wrap;" value="" vertex="1">
+          <mxGeometry height="26" width="50" x="210" y="160" as="geometry" />
+        </mxCell>
+        <mxCell id="Venue_capacity_t" parent="Venue" style="fillColor=#1e1e1e;strokeColor=#bdbdbd;fontColor=#e8e8e8;align=left;spacingLeft=6;fontSize=12;whiteSpace=wrap;" value="number" vertex="1">
+          <mxGeometry height="26" width="78" y="186" as="geometry" />
+        </mxCell>
+        <mxCell id="Venue_capacity" parent="Venue" style="fillColor=#1e1e1e;strokeColor=#bdbdbd;fontColor=#e8e8e8;align=left;spacingLeft=6;fontSize=12;whiteSpace=wrap;" value="capacity" vertex="1">
+          <mxGeometry height="26" width="132" x="78" y="186" as="geometry" />
+        </mxCell>
+        <mxCell id="Venue_capacity_k" parent="Venue" style="fillColor=#1e1e1e;strokeColor=#bdbdbd;fontColor=#e8e8e8;align=center;spacingLeft=6;fontSize=12;whiteSpace=wrap;" value="" vertex="1">
+          <mxGeometry height="26" width="50" x="210" y="186" as="geometry" />
+        </mxCell>
+        <mxCell id="Venue_images_t" parent="Venue" style="fillColor=#1e1e1e;strokeColor=#bdbdbd;fontColor=#e8e8e8;align=left;spacingLeft=6;fontSize=12;whiteSpace=wrap;" value="string" vertex="1">
+          <mxGeometry height="26" width="78" y="212" as="geometry" />
+        </mxCell>
+        <mxCell id="Venue_images" parent="Venue" style="fillColor=#1e1e1e;strokeColor=#bdbdbd;fontColor=#e8e8e8;align=left;spacingLeft=6;fontSize=12;whiteSpace=wrap;" value="images" vertex="1">
+          <mxGeometry height="26" width="132" x="78" y="212" as="geometry" />
+        </mxCell>
+        <mxCell id="Venue_images_k" parent="Venue" style="fillColor=#1e1e1e;strokeColor=#bdbdbd;fontColor=#e8e8e8;align=center;spacingLeft=6;fontSize=12;whiteSpace=wrap;" value="" vertex="1">
+          <mxGeometry height="26" width="50" x="210" y="212" as="geometry" />
+        </mxCell>
+        <mxCell id="Venue_weekendPrice_t" parent="Venue" style="fillColor=#1e1e1e;strokeColor=#bdbdbd;fontColor=#e8e8e8;align=left;spacingLeft=6;fontSize=12;whiteSpace=wrap;" value="number" vertex="1">
+          <mxGeometry height="26" width="78" y="238" as="geometry" />
+        </mxCell>
+        <mxCell id="Venue_weekendPrice" parent="Venue" style="fillColor=#1e1e1e;strokeColor=#bdbdbd;fontColor=#e8e8e8;align=left;spacingLeft=6;fontSize=12;whiteSpace=wrap;" value="weekendPrice" vertex="1">
+          <mxGeometry height="26" width="132" x="78" y="238" as="geometry" />
+        </mxCell>
+        <mxCell id="Venue_weekendPrice_k" parent="Venue" style="fillColor=#1e1e1e;strokeColor=#bdbdbd;fontColor=#e8e8e8;align=center;spacingLeft=6;fontSize=12;whiteSpace=wrap;" value="" vertex="1">
+          <mxGeometry height="26" width="50" x="210" y="238" as="geometry" />
+        </mxCell>
+        <mxCell id="Venue_weekDayPrice_t" parent="Venue" style="fillColor=#1e1e1e;strokeColor=#bdbdbd;fontColor=#e8e8e8;align=left;spacingLeft=6;fontSize=12;whiteSpace=wrap;" value="number" vertex="1">
+          <mxGeometry height="26" width="78" y="264" as="geometry" />
+        </mxCell>
+        <mxCell id="Venue_weekDayPrice" parent="Venue" style="fillColor=#1e1e1e;strokeColor=#bdbdbd;fontColor=#e8e8e8;align=left;spacingLeft=6;fontSize=12;whiteSpace=wrap;" value="weekDayPrice" vertex="1">
+          <mxGeometry height="26" width="132" x="78" y="264" as="geometry" />
+        </mxCell>
+        <mxCell id="Venue_weekDayPrice_k" parent="Venue" style="fillColor=#1e1e1e;strokeColor=#bdbdbd;fontColor=#e8e8e8;align=center;spacingLeft=6;fontSize=12;whiteSpace=wrap;" value="" vertex="1">
+          <mxGeometry height="26" width="50" x="210" y="264" as="geometry" />
+        </mxCell>
+        <mxCell id="Review" parent="1" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;fillColor=#262626;strokeColor=#bdbdbd;fontColor=#ffffff;fontSize=13;" value="REVIEW" vertex="1">
+          <mxGeometry height="160" width="260" x="840" y="60" as="geometry" />
+        </mxCell>
+        <mxCell id="Review__id_t" parent="Review" style="fillColor=#1e1e1e;strokeColor=#bdbdbd;fontColor=#e8e8e8;align=left;spacingLeft=6;fontSize=12;whiteSpace=wrap;" value="ObjectId" vertex="1">
+          <mxGeometry height="26" width="78" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="Review__id" parent="Review" style="fillColor=#1e1e1e;strokeColor=#bdbdbd;fontColor=#e8e8e8;align=left;spacingLeft=6;fontSize=12;whiteSpace=wrap;" value="_id" vertex="1">
+          <mxGeometry height="26" width="132" x="78" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="Review__id_k" parent="Review" style="fillColor=#1e1e1e;strokeColor=#bdbdbd;fontColor=#e8e8e8;align=center;spacingLeft=6;fontSize=12;whiteSpace=wrap;fontStyle=1;" value="PK" vertex="1">
+          <mxGeometry height="26" width="50" x="210" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="Review_venue_t" parent="Review" style="fillColor=#1e1e1e;strokeColor=#bdbdbd;fontColor=#e8e8e8;align=left;spacingLeft=6;fontSize=12;whiteSpace=wrap;" value="ObjectId" vertex="1">
+          <mxGeometry height="26" width="78" y="56" as="geometry" />
+        </mxCell>
+        <mxCell id="Review_venue" parent="Review" style="fillColor=#1e1e1e;strokeColor=#bdbdbd;fontColor=#e8e8e8;align=left;spacingLeft=6;fontSize=12;whiteSpace=wrap;" value="venue" vertex="1">
+          <mxGeometry height="26" width="132" x="78" y="56" as="geometry" />
+        </mxCell>
+        <mxCell id="Review_venue_k" parent="Review" style="fillColor=#1e1e1e;strokeColor=#bdbdbd;fontColor=#e8e8e8;align=center;spacingLeft=6;fontSize=12;whiteSpace=wrap;fontStyle=1;" value="FK" vertex="1">
+          <mxGeometry height="26" width="50" x="210" y="56" as="geometry" />
+        </mxCell>
+        <mxCell id="Review_customer_t" parent="Review" style="fillColor=#1e1e1e;strokeColor=#bdbdbd;fontColor=#e8e8e8;align=left;spacingLeft=6;fontSize=12;whiteSpace=wrap;" value="ObjectId" vertex="1">
+          <mxGeometry height="26" width="78" y="82" as="geometry" />
+        </mxCell>
+        <mxCell id="Review_customer" parent="Review" style="fillColor=#1e1e1e;strokeColor=#bdbdbd;fontColor=#e8e8e8;align=left;spacingLeft=6;fontSize=12;whiteSpace=wrap;" value="customer" vertex="1">
+          <mxGeometry height="26" width="132" x="78" y="82" as="geometry" />
+        </mxCell>
+        <mxCell id="Review_customer_k" parent="Review" style="fillColor=#1e1e1e;strokeColor=#bdbdbd;fontColor=#e8e8e8;align=center;spacingLeft=6;fontSize=12;whiteSpace=wrap;fontStyle=1;" value="FK" vertex="1">
+          <mxGeometry height="26" width="50" x="210" y="82" as="geometry" />
+        </mxCell>
+        <mxCell id="Review_rating_t" parent="Review" style="fillColor=#1e1e1e;strokeColor=#bdbdbd;fontColor=#e8e8e8;align=left;spacingLeft=6;fontSize=12;whiteSpace=wrap;" value="number" vertex="1">
+          <mxGeometry height="26" width="78" y="108" as="geometry" />
+        </mxCell>
+        <mxCell id="Review_rating" parent="Review" style="fillColor=#1e1e1e;strokeColor=#bdbdbd;fontColor=#e8e8e8;align=left;spacingLeft=6;fontSize=12;whiteSpace=wrap;" value="rating" vertex="1">
+          <mxGeometry height="26" width="132" x="78" y="108" as="geometry" />
+        </mxCell>
+        <mxCell id="Review_rating_k" parent="Review" style="fillColor=#1e1e1e;strokeColor=#bdbdbd;fontColor=#e8e8e8;align=center;spacingLeft=6;fontSize=12;whiteSpace=wrap;" value="" vertex="1">
+          <mxGeometry height="26" width="50" x="210" y="108" as="geometry" />
+        </mxCell>
+        <mxCell id="Review_comment_t" parent="Review" style="fillColor=#1e1e1e;strokeColor=#bdbdbd;fontColor=#e8e8e8;align=left;spacingLeft=6;fontSize=12;whiteSpace=wrap;" value="string" vertex="1">
+          <mxGeometry height="26" width="78" y="134" as="geometry" />
+        </mxCell>
+        <mxCell id="Review_comment" parent="Review" style="fillColor=#1e1e1e;strokeColor=#bdbdbd;fontColor=#e8e8e8;align=left;spacingLeft=6;fontSize=12;whiteSpace=wrap;" value="comment" vertex="1">
+          <mxGeometry height="26" width="132" x="78" y="134" as="geometry" />
+        </mxCell>
+        <mxCell id="Review_comment_k" parent="Review" style="fillColor=#1e1e1e;strokeColor=#bdbdbd;fontColor=#e8e8e8;align=center;spacingLeft=6;fontSize=12;whiteSpace=wrap;" value="" vertex="1">
+          <mxGeometry height="26" width="50" x="210" y="134" as="geometry" />
+        </mxCell>
+        <mxCell id="BlockedDate" parent="1" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;fillColor=#262626;strokeColor=#bdbdbd;fontColor=#ffffff;fontSize=13;" value="BLOCKED_DATE" vertex="1">
+          <mxGeometry height="186" width="260" x="840" y="340" as="geometry" />
+        </mxCell>
+        <mxCell id="BlockedDate__id_t" parent="BlockedDate" style="fillColor=#1e1e1e;strokeColor=#bdbdbd;fontColor=#e8e8e8;align=left;spacingLeft=6;fontSize=12;whiteSpace=wrap;" value="ObjectId" vertex="1">
+          <mxGeometry height="26" width="78" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="BlockedDate__id" parent="BlockedDate" style="fillColor=#1e1e1e;strokeColor=#bdbdbd;fontColor=#e8e8e8;align=left;spacingLeft=6;fontSize=12;whiteSpace=wrap;" value="_id" vertex="1">
+          <mxGeometry height="26" width="132" x="78" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="BlockedDate__id_k" parent="BlockedDate" style="fillColor=#1e1e1e;strokeColor=#bdbdbd;fontColor=#e8e8e8;align=center;spacingLeft=6;fontSize=12;whiteSpace=wrap;fontStyle=1;" value="PK" vertex="1">
+          <mxGeometry height="26" width="50" x="210" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="BlockedDate_venue_t" parent="BlockedDate" style="fillColor=#1e1e1e;strokeColor=#bdbdbd;fontColor=#e8e8e8;align=left;spacingLeft=6;fontSize=12;whiteSpace=wrap;" value="ObjectId" vertex="1">
+          <mxGeometry height="26" width="78" y="56" as="geometry" />
+        </mxCell>
+        <mxCell id="BlockedDate_venue" parent="BlockedDate" style="fillColor=#1e1e1e;strokeColor=#bdbdbd;fontColor=#e8e8e8;align=left;spacingLeft=6;fontSize=12;whiteSpace=wrap;" value="venue" vertex="1">
+          <mxGeometry height="26" width="132" x="78" y="56" as="geometry" />
+        </mxCell>
+        <mxCell id="BlockedDate_venue_k" parent="BlockedDate" style="fillColor=#1e1e1e;strokeColor=#bdbdbd;fontColor=#e8e8e8;align=center;spacingLeft=6;fontSize=12;whiteSpace=wrap;fontStyle=1;" value="FK" vertex="1">
+          <mxGeometry height="26" width="50" x="210" y="56" as="geometry" />
+        </mxCell>
+        <mxCell id="BlockedDate_date_t" parent="BlockedDate" style="fillColor=#1e1e1e;strokeColor=#bdbdbd;fontColor=#e8e8e8;align=left;spacingLeft=6;fontSize=12;whiteSpace=wrap;" value="date" vertex="1">
+          <mxGeometry height="26" width="78" y="82" as="geometry" />
+        </mxCell>
+        <mxCell id="BlockedDate_date" parent="BlockedDate" style="fillColor=#1e1e1e;strokeColor=#bdbdbd;fontColor=#e8e8e8;align=left;spacingLeft=6;fontSize=12;whiteSpace=wrap;" value="date" vertex="1">
+          <mxGeometry height="26" width="132" x="78" y="82" as="geometry" />
+        </mxCell>
+        <mxCell id="BlockedDate_date_k" parent="BlockedDate" style="fillColor=#1e1e1e;strokeColor=#bdbdbd;fontColor=#e8e8e8;align=center;spacingLeft=6;fontSize=12;whiteSpace=wrap;" value="" vertex="1">
+          <mxGeometry height="26" width="50" x="210" y="82" as="geometry" />
+        </mxCell>
+        <mxCell id="BlockedDate_timeOfDay_t" parent="BlockedDate" style="fillColor=#1e1e1e;strokeColor=#bdbdbd;fontColor=#e8e8e8;align=left;spacingLeft=6;fontSize=12;whiteSpace=wrap;" value="string" vertex="1">
+          <mxGeometry height="26" width="78" y="108" as="geometry" />
+        </mxCell>
+        <mxCell id="BlockedDate_timeOfDay" parent="BlockedDate" style="fillColor=#1e1e1e;strokeColor=#bdbdbd;fontColor=#e8e8e8;align=left;spacingLeft=6;fontSize=12;whiteSpace=wrap;" value="timeOfDay" vertex="1">
+          <mxGeometry height="26" width="132" x="78" y="108" as="geometry" />
+        </mxCell>
+        <mxCell id="BlockedDate_timeOfDay_k" parent="BlockedDate" style="fillColor=#1e1e1e;strokeColor=#bdbdbd;fontColor=#e8e8e8;align=center;spacingLeft=6;fontSize=12;whiteSpace=wrap;" value="" vertex="1">
+          <mxGeometry height="26" width="50" x="210" y="108" as="geometry" />
+        </mxCell>
+        <mxCell id="BlockedDate_reasonCategory_t" parent="BlockedDate" style="fillColor=#1e1e1e;strokeColor=#bdbdbd;fontColor=#e8e8e8;align=left;spacingLeft=6;fontSize=12;whiteSpace=wrap;" value="string" vertex="1">
+          <mxGeometry height="26" width="78" y="134" as="geometry" />
+        </mxCell>
+        <mxCell id="BlockedDate_reasonCategory" parent="BlockedDate" style="fillColor=#1e1e1e;strokeColor=#bdbdbd;fontColor=#e8e8e8;align=left;spacingLeft=6;fontSize=12;whiteSpace=wrap;" value="reasonCategory" vertex="1">
+          <mxGeometry height="26" width="132" x="78" y="134" as="geometry" />
+        </mxCell>
+        <mxCell id="BlockedDate_reasonCategory_k" parent="BlockedDate" style="fillColor=#1e1e1e;strokeColor=#bdbdbd;fontColor=#e8e8e8;align=center;spacingLeft=6;fontSize=12;whiteSpace=wrap;" value="" vertex="1">
+          <mxGeometry height="26" width="50" x="210" y="134" as="geometry" />
+        </mxCell>
+        <mxCell id="BlockedDate_reason_t" parent="BlockedDate" style="fillColor=#1e1e1e;strokeColor=#bdbdbd;fontColor=#e8e8e8;align=left;spacingLeft=6;fontSize=12;whiteSpace=wrap;" value="string" vertex="1">
+          <mxGeometry height="26" width="78" y="160" as="geometry" />
+        </mxCell>
+        <mxCell id="BlockedDate_reason" parent="BlockedDate" style="fillColor=#1e1e1e;strokeColor=#bdbdbd;fontColor=#e8e8e8;align=left;spacingLeft=6;fontSize=12;whiteSpace=wrap;" value="reason" vertex="1">
+          <mxGeometry height="26" width="132" x="78" y="160" as="geometry" />
+        </mxCell>
+        <mxCell id="BlockedDate_reason_k" parent="BlockedDate" style="fillColor=#1e1e1e;strokeColor=#bdbdbd;fontColor=#e8e8e8;align=center;spacingLeft=6;fontSize=12;whiteSpace=wrap;" value="" vertex="1">
+          <mxGeometry height="26" width="50" x="210" y="160" as="geometry" />
+        </mxCell>
+        <mxCell id="e1" edge="1" parent="1" source="User" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#e0b66a;strokeWidth=2;fontColor=#ffffff;fontSize=12;labelBackgroundColor=#1a1a1a;startArrow=ERmandOne;startFill=0;endArrow=ERmany;endFill=0;exitX=1;exitY=0.2;exitDx=0;exitDy=0;entryX=0;entryY=0.15;entryDx=0;entryDy=0;" target="Venue" value="owner">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e2" edge="1" parent="1" source="User" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#e0b66a;strokeWidth=2;fontColor=#ffffff;fontSize=12;labelBackgroundColor=#1a1a1a;startArrow=ERmandOne;startFill=0;endArrow=ERmany;endFill=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="Booking" value="customer">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e3" edge="1" parent="1" source="Venue" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#e0b66a;strokeWidth=2;fontColor=#ffffff;fontSize=12;labelBackgroundColor=#1a1a1a;startArrow=ERmandOne;startFill=0;endArrow=ERmany;endFill=0;exitX=0.1;exitY=1;exitDx=0;exitDy=0;entryX=1;entryY=0.2;entryDx=0;entryDy=0;" target="Booking" value="venue">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e4" edge="1" parent="1" source="Venue" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#e0b66a;strokeWidth=2;fontColor=#ffffff;fontSize=12;labelBackgroundColor=#1a1a1a;startArrow=ERmandOne;startFill=0;endArrow=ERmany;endFill=0;exitX=1;exitY=0.15;exitDx=0;exitDy=0;entryX=0;entryY=0.3;entryDx=0;entryDy=0;" target="Review" value="venue">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e5" edge="1" parent="1" source="Venue" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#e0b66a;strokeWidth=2;fontColor=#ffffff;fontSize=12;labelBackgroundColor=#1a1a1a;startArrow=ERmandOne;startFill=0;endArrow=ERmany;endFill=0;exitX=1;exitY=0.9;exitDx=0;exitDy=0;entryX=0;entryY=0.3;entryDx=0;entryDy=0;" target="BlockedDate" value="venue">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e6" edge="1" parent="1" source="User" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#e0b66a;strokeWidth=2;fontColor=#ffffff;fontSize=12;labelBackgroundColor=#1a1a1a;startArrow=ERmandOne;startFill=0;endArrow=ERmany;endFill=0;exitX=0.85;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="Review" value="customer">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="261" y="20" />
+              <mxPoint x="970" y="20" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
